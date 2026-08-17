@@ -174,6 +174,10 @@
               <span>Criminal Preferencial:</span>
               <strong id="count-crim-prio" style="color: var(--warning);">0</strong>
             </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Criminal Superprioridade:</span>
+              <strong id="count-crim-super" style="color: var(--danger);">0</strong>
+            </div>
             <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
               <span>Família Comum:</span>
               <strong id="count-fam-norm">0</strong>
@@ -181,6 +185,10 @@
             <div style="display: flex; justify-content: space-between;">
               <span>Família Preferencial:</span>
               <strong id="count-fam-prio" style="color: var(--warning);">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Família Superprioridade:</span>
+              <strong id="count-fam-super" style="color: var(--danger);">0</strong>
             </div>
           </div>
         </div>
@@ -220,7 +228,7 @@
   </main>
 
   <footer>
-    Painel de Senhas Jurídico © 2026
+  Painel de Senha Teste © 2026
   </footer>
 
   <script src="app.js"></script>
@@ -229,14 +237,14 @@
     let selectedDesk = '1';
 
     // Get selected desk from cache/setting
-    if (localStorage.getItem('operator_desk')) {
-      selectedDesk = localStorage.getItem('operator_desk');
+    if (sessionStorage.getItem('operator_desk')) {
+      selectedDesk = sessionStorage.getItem('operator_desk');
       document.getElementById('desk-select').value = selectedDesk;
     }
 
     function changeDesk() {
       selectedDesk = document.getElementById('desk-select').value;
-      localStorage.setItem('operator_desk', selectedDesk);
+      sessionStorage.setItem('operator_desk', selectedDesk);
       render();
     }
 
@@ -282,11 +290,19 @@
         return;
       }
 
-      // Rule: prioritize priority tickets first within the subset
+      // Rule: prioritize superprioridade, then prioridade, then normal
+      const superTickets = filtered.filter(t => t.type === 'superprioridade');
       const priorityTickets = filtered.filter(t => t.type === 'prioridade');
       const normalTickets = filtered.filter(t => t.type === 'normal');
       
-      const nextTicket = priorityTickets.length > 0 ? priorityTickets[0] : normalTickets[0];
+      let nextTicket;
+      if (superTickets.length > 0) {
+        nextTicket = superTickets[0];
+      } else if (priorityTickets.length > 0) {
+        nextTicket = priorityTickets[0];
+      } else {
+        nextTicket = normalTickets[0];
+      }
       
       callTicket(nextTicket.id, selectedDesk);
       render();
@@ -306,8 +322,10 @@
       // Update counters
       document.getElementById('count-crim-norm').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'normal').length;
       document.getElementById('count-crim-prio').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'prioridade').length;
+      document.getElementById('count-crim-super').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'superprioridade').length;
       document.getElementById('count-fam-norm').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'normal').length;
       document.getElementById('count-fam-prio').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'prioridade').length;
+      document.getElementById('count-fam-super').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'superprioridade').length;
 
       // Update current serving at this desk
       const myActive = state.desks[selectedDesk];
@@ -318,7 +336,9 @@
       if (myActive) {
         activeCodeEl.textContent = myActive.code;
         const serviceLabel = myActive.service === 'criminal' ? 'Criminal' : 'Família';
-        const typeLabel = myActive.type === 'prioridade' ? 'Preferencial' : 'Comum';
+        let typeLabel = 'Comum';
+        if (myActive.type === 'prioridade') typeLabel = 'Preferencial';
+        if (myActive.type === 'superprioridade') typeLabel = 'Superprioridade';
         activeInfoEl.textContent = `${serviceLabel} - ${typeLabel} (Chamado às ${myActive.calledAt})`;
         recallBtn.style.display = 'inline-flex';
       } else {
@@ -335,11 +355,14 @@
         list = waiting.filter(t => t.service === 'familia');
       }
 
-      // Sort: prioridade first
+      // Sort: superprioridade first, then prioridade, then normal
       list.sort((a, b) => {
-        if (a.type === 'prioridade' && b.type !== 'prioridade') return -1;
-        if (a.type !== 'prioridade' && b.type === 'prioridade') return 1;
-        return 0; // maintain original chronological order
+        const getPriorityWeight = (type) => {
+          if (type === 'superprioridade') return 2;
+          if (type === 'prioridade') return 1;
+          return 0;
+        };
+        return getPriorityWeight(b.type) - getPriorityWeight(a.type);
       });
 
       const container = document.getElementById('queue-list-container');
@@ -351,7 +374,7 @@
             <div>
               <div class="queue-code">${t.code}</div>
               <div class="queue-details">
-                <span class="badge ${t.type === 'prioridade' ? 'badge-priority' : 'badge-normal'}">${t.type === 'prioridade' ? 'Preferencial' : 'Comum'}</span>
+                <span class="badge ${t.type === 'superprioridade' ? 'badge-super' : (t.type === 'prioridade' ? 'badge-priority' : 'badge-normal')}">${t.type === 'superprioridade' ? 'Superprioridade' : (t.type === 'prioridade' ? 'Preferencial' : 'Comum')}</span>
                 <span>${t.service === 'criminal' ? 'Vara Criminal' : 'Vara de Família'}</span>
                 <span style="margin-left: 0.5rem; color: var(--text-muted);">${t.createdAt}</span>
               </div>

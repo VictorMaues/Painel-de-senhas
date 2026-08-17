@@ -207,6 +207,11 @@ p.subtitle {
   color: #b45309;
 }
 
+.badge-super {
+  background-color: var(--danger-light);
+  color: #991b1b;
+}
+
 /* Custom Grid */
 .grid-2 {
   display: grid;
