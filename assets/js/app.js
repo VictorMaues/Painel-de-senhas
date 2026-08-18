@@ -24,7 +24,8 @@ const defaultState = {
   },
   currentTicket: null, // A senha que está sendo chamada na tela/painel principal no momento
   history: [], // Histórico das últimas 4 senhas chamadas anteriormente
-  desks: {} // Mapeamento dinâmico que guarda qual senha cada Guichê (1, 2, 3, etc.) está atendendo
+  desks: {}, // Mapeamento dinâmico que guarda qual senha cada Guichê (1, 2, 3, etc.) está atendendo
+  cycleIndex: 0 // Índice do ciclo de prioridade (0 a 4) para controle da sequência (S, S, P, P, C)
 };
 
 // Recupera o estado atualizado do banco de dados local (localStorage)

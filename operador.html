@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Operador - Chamador de Senhas</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/style.css">
   <style>
     .operator-container {
       display: grid;
@@ -245,7 +245,7 @@
   Painel de Senha Teste © 2026
   </footer>
 
-  <script src="app.js"></script>
+  <script src="assets/js/app.js"></script>
   <script>
     let activeTab = 'all';
     let selectedDesk = '1';
@@ -306,22 +306,30 @@
         return;
       }
 
-      // Rule: prioritize superprioridade, then prioridade, then normal
-      const superTickets = filtered.filter(t => t.type === 'superprioridade');
-      const priorityTickets = filtered.filter(t => t.type === 'prioridade');
-      const normalTickets = filtered.filter(t => t.type === 'normal');
+      // Sequência cíclica de 5 atendimentos: 2 Superprioridades, 2 Preferenciais, 1 Comum (S, S, P, P, C)
+      const cycleSequence = ['superprioridade', 'superprioridade', 'prioridade', 'prioridade', 'normal'];
+      let nextTicket = null;
+      let targetIndex = state.cycleIndex || 0;
       
-      let nextTicket;
-      if (superTickets.length > 0) {
-        nextTicket = superTickets[0];
-      } else if (priorityTickets.length > 0) {
-        nextTicket = priorityTickets[0];
-      } else {
-        nextTicket = normalTickets[0];
+      // Procura a senha correspondente na sequência do ciclo, avançando caso não haja senhas do tipo desejado
+      for (let offset = 0; offset < 5; offset++) {
+        const checkIndex = (targetIndex + offset) % 5;
+        const targetType = cycleSequence[checkIndex];
+        const ticketsOfType = filtered.filter(t => t.type === targetType);
+        
+        if (ticketsOfType.length > 0) {
+          nextTicket = ticketsOfType[0];
+          // Avança o índice do ciclo para a posição seguinte à do ticket atendido
+          state.cycleIndex = (checkIndex + 1) % 5;
+          saveState(state); // Salva o novo índice no estado global
+          break;
+        }
       }
       
-      callTicket(nextTicket.id, selectedDesk);
-      render();
+      if (nextTicket) {
+        callTicket(nextTicket.id, selectedDesk);
+        render();
+      }
     }
 
     function confirmReset() {
