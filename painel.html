@@ -311,7 +311,10 @@
 
       // Wait a moment for the chime to play
       setTimeout(() => {
-        const serviceText = ticket.service === 'criminal' ? 'Vara Criminal' : 'Vara de Família';
+        let serviceText = 'Vara de Família';
+        if (ticket.service === 'criminal') serviceText = 'Vara Criminal';
+        if (ticket.service === 'execucao-penal') serviceText = 'Execução Penal';
+        
         let typeText = 'Normal';
         if (ticket.type === 'prioridade') typeText = 'Prioritária';
         if (ticket.type === 'superprioridade') typeText = 'Superprioridade';
@@ -338,7 +341,10 @@
       if (current) {
         document.getElementById('current-code').textContent = current.code;
         
-        const serviceLabel = current.service === 'criminal' ? 'Vara Criminal' : 'Vara de Família';
+        let serviceLabel = 'Vara de Família';
+        if (current.service === 'criminal') serviceLabel = 'Vara Criminal';
+        if (current.service === 'execucao-penal') serviceLabel = 'Execução Penal';
+        
         let typeLabel = 'Comum';
         if (current.type === 'prioridade') typeLabel = 'Preferencial';
         if (current.type === 'superprioridade') typeLabel = 'Superprioridade';
@@ -350,15 +356,21 @@
       // History
       const historyListEl = document.getElementById('history-list');
       if (state.history && state.history.length > 0) {
-        historyListEl.innerHTML = state.history.map(item => `
-          <div class="history-item">
-            <div class="history-code">${item.code}</div>
-            <div class="history-info">
-              <div class="history-desk">Guichê ${item.desk}</div>
-              <div class="history-service">${item.service === 'criminal' ? 'Criminal' : 'Família'} - ${item.type === 'superprioridade' ? 'Super' : (item.type === 'prioridade' ? 'Pref' : 'Comum')}</div>
+        historyListEl.innerHTML = state.history.map(item => {
+          let serviceName = 'Família';
+          if (item.service === 'criminal') serviceName = 'Criminal';
+          if (item.service === 'execucao-penal') serviceName = 'Exec. Penal';
+          
+          return `
+            <div class="history-item">
+              <div class="history-code">${item.code}</div>
+              <div class="history-info">
+                <div class="history-desk">Guichê ${item.desk}</div>
+                <div class="history-service">${serviceName} - ${item.type === 'superprioridade' ? 'Super' : (item.type === 'prioridade' ? 'Pref' : 'Comum')}</div>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } else {
         historyListEl.innerHTML = `<div style="text-align: center; color: #4b5563; margin-top: 3rem;">Sem chamadas anteriores.</div>`;
       }

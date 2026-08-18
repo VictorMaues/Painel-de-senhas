@@ -161,9 +161,7 @@
             </svg>
             Chamar Novamente
           </button>
-        </div>
-
-        <div class="card" style="padding: 1.5rem;">
+        </div>        <div class="card" style="padding: 1.5rem;">
           <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Filas Disponíveis</h2>
           <div style="display: flex; flex-direction: column; gap: 0.75rem;">
             <div style="display: flex; justify-content: space-between;">
@@ -190,6 +188,18 @@
               <span>Família Superprioridade:</span>
               <strong id="count-fam-super" style="color: var(--danger);">0</strong>
             </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+              <span>Exec. Penal Comum:</span>
+              <strong id="count-exec-norm">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Exec. Penal Preferencial:</span>
+              <strong id="count-exec-prio" style="color: var(--warning);">0</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Exec. Penal Superprioridade:</span>
+              <strong id="count-exec-super" style="color: var(--danger);">0</strong>
+            </div>
           </div>
         </div>
       </div>
@@ -208,12 +218,16 @@
           <button class="btn btn-secondary" onclick="callNext('familia')">
             Próximo Família
           </button>
+          <button class="btn btn-secondary" onclick="callNext('execucao-penal')">
+            Próximo Exec. Penal
+          </button>
         </div>
 
         <div class="tab-nav">
           <button class="tab-btn active" id="tab-all" onclick="setTab('all')">Todas as Senhas</button>
           <button class="tab-btn" id="tab-criminal" onclick="setTab('criminal')">Vara Criminal</button>
           <button class="tab-btn" id="tab-familia" onclick="setTab('familia')">Vara de Família</button>
+          <button class="tab-btn" id="tab-execucao-penal" onclick="setTab('execucao-penal')">Execução Penal</button>
         </div>
 
         <div class="queue-section">
@@ -277,12 +291,14 @@
         return;
       }
 
-      // Filter based on scope (criminal, familia, or any)
+      // Filter based on scope (criminal, familia, execucao-penal, or any)
       let filtered = waiting;
       if (scope === 'criminal') {
         filtered = waiting.filter(t => t.service === 'criminal');
       } else if (scope === 'familia') {
         filtered = waiting.filter(t => t.service === 'familia');
+      } else if (scope === 'execucao-penal') {
+        filtered = waiting.filter(t => t.service === 'execucao-penal');
       }
 
       if (filtered.length === 0) {
@@ -326,6 +342,9 @@
       document.getElementById('count-fam-norm').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'normal').length;
       document.getElementById('count-fam-prio').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'prioridade').length;
       document.getElementById('count-fam-super').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'superprioridade').length;
+      document.getElementById('count-exec-norm').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'normal').length;
+      document.getElementById('count-exec-prio').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'prioridade').length;
+      document.getElementById('count-exec-super').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'superprioridade').length;
 
       // Update current serving at this desk
       const myActive = state.desks[selectedDesk];
@@ -335,7 +354,10 @@
 
       if (myActive) {
         activeCodeEl.textContent = myActive.code;
-        const serviceLabel = myActive.service === 'criminal' ? 'Criminal' : 'Família';
+        let serviceLabel = 'Família';
+        if (myActive.service === 'criminal') serviceLabel = 'Criminal';
+        if (myActive.service === 'execucao-penal') serviceLabel = 'Exec. Penal';
+        
         let typeLabel = 'Comum';
         if (myActive.type === 'prioridade') typeLabel = 'Preferencial';
         if (myActive.type === 'superprioridade') typeLabel = 'Superprioridade';
@@ -353,6 +375,8 @@
         list = waiting.filter(t => t.service === 'criminal');
       } else if (activeTab === 'familia') {
         list = waiting.filter(t => t.service === 'familia');
+      } else if (activeTab === 'execucao-penal') {
+        list = waiting.filter(t => t.service === 'execucao-penal');
       }
 
       // Sort: superprioridade first, then prioridade, then normal
@@ -369,21 +393,27 @@
       if (list.length === 0) {
         container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Fila vazia.</div>`;
       } else {
-        container.innerHTML = list.map(t => `
-          <div class="queue-item">
-            <div>
-              <div class="queue-code">${t.code}</div>
-              <div class="queue-details">
-                <span class="badge ${t.type === 'superprioridade' ? 'badge-super' : (t.type === 'prioridade' ? 'badge-priority' : 'badge-normal')}">${t.type === 'superprioridade' ? 'Superprioridade' : (t.type === 'prioridade' ? 'Preferencial' : 'Comum')}</span>
-                <span>${t.service === 'criminal' ? 'Vara Criminal' : 'Vara de Família'}</span>
-                <span style="margin-left: 0.5rem; color: var(--text-muted);">${t.createdAt}</span>
+        container.innerHTML = list.map(t => {
+          let serviceName = 'Família';
+          if (t.service === 'criminal') serviceName = 'Vara Criminal';
+          if (t.service === 'execucao-penal') serviceName = 'Execução Penal';
+          
+          return `
+            <div class="queue-item">
+              <div>
+                <div class="queue-code">${t.code}</div>
+                <div class="queue-details">
+                  <span class="badge ${t.type === 'superprioridade' ? 'badge-super' : (t.type === 'prioridade' ? 'badge-priority' : 'badge-normal')}">${t.type === 'superprioridade' ? 'Superprioridade' : (t.type === 'prioridade' ? 'Preferencial' : 'Comum')}</span>
+                  <span>${serviceName}</span>
+                  <span style="margin-left: 0.5rem; color: var(--text-muted);">${t.createdAt}</span>
+                </div>
               </div>
+              <button class="btn btn-primary" onclick="callSpecific('${t.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                Chamar
+              </button>
             </div>
-            <button class="btn btn-primary" onclick="callSpecific('${t.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-              Chamar
-            </button>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
     }
 

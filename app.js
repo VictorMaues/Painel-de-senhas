@@ -17,7 +17,10 @@ const defaultState = {
     'criminal-superprioridade': 1,
     'familia-normal': 1,
     'familia-prioridade': 1,
-    'familia-superprioridade': 1
+    'familia-superprioridade': 1,
+    'execucao-penal-normal': 1,
+    'execucao-penal-prioridade': 1,
+    'execucao-penal-superprioridade': 1
   },
   currentTicket: null, // A senha que está sendo chamada na tela/painel principal no momento
   history: [], // Histórico das últimas 4 senhas chamadas anteriormente
@@ -88,9 +91,12 @@ function generateTicket(service, type) {
   state.nextNumbers[key] = num + 1;
 
   // Define os prefixos da senha impressa:
-  // C = Vara Criminal | F = Vara de Família
+  // C = Vara Criminal | F = Vara de Família | E = Execução Penal
   // N = Normal | P = Prioridade | S = Superprioridade
-  const servicePrefix = service === 'criminal' ? 'C' : 'F';
+  let servicePrefix = 'E';
+  if (service === 'criminal') servicePrefix = 'C';
+  if (service === 'familia') servicePrefix = 'F';
+  
   let typePrefix = 'N';
   if (type === 'prioridade') typePrefix = 'P';
   if (type === 'superprioridade') typePrefix = 'S';
@@ -103,7 +109,7 @@ function generateTicket(service, type) {
   const newTicket = {
     id: `${code}-${Date.now()}`, // Identificador único gerado combinando código e timestamp
     code: code, // Código legível exibido no painel
-    service: service, // Serviço ('criminal' ou 'familia')
+    service: service, // Serviço ('criminal', 'familia' ou 'execucao-penal')
     type: type, // Tipo de atendimento ('normal', 'prioridade', 'superprioridade')
     status: 'waiting', // Status inicial: aguardando atendimento
     createdAt: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) // Hora de criação formatada (HH:MM)
