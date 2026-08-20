@@ -172,12 +172,22 @@
       background: rgba(31, 41, 55, 0.8);
       border: 1px solid #374151;
       border-radius: var(--radius-sm);
-      padding: 0.5rem 1rem;
+      padding: 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       font-size: 0.875rem;
       cursor: pointer;
+      max-width: 2.2rem;
+      overflow: hidden;
+      transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .audio-config:hover {
+      max-width: 20rem;
+      padding: 0.5rem 1rem;
+      background: rgba(31, 41, 55, 0.95);
     }
   </style>
 </head>
