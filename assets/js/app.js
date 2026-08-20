@@ -1,68 +1,63 @@
+const DB_NAME = "painel_senhas_db";
 
-const DB_NAME = 'painel_senhas_db';
-
-const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('painel_senhas') : null;
-
+const channel =
+  typeof BroadcastChannel !== "undefined"
+    ? new BroadcastChannel("painel_senhas")
+    : null;
 
 const defaultState = {
-  queue: [], 
+  queue: [],
   nextNumbers: {
-    'criminal-normal': 1,
-    'criminal-prioridade': 1,
-    'criminal-superprioridade': 1,
-    'familia-normal': 1,
-    'familia-prioridade': 1,
-    'familia-superprioridade': 1,
-    'execucao-penal-normal': 1,
-    'execucao-penal-prioridade': 1,
-    'execucao-penal-superprioridade': 1
+    "criminal-normal": 1,
+    "criminal-prioridade": 1,
+    "criminal-superprioridade": 1,
+    "familia-normal": 1,
+    "familia-prioridade": 1,
+    "familia-superprioridade": 1,
+    "execucao-penal-normal": 1,
+    "execucao-penal-prioridade": 1,
+    "execucao-penal-superprioridade": 1,
   },
-  currentTicket: null, 
+  currentTicket: null,
   history: [],
-  desks: {}, 
-  cycleIndex: 0 
+  desks: {},
+  cycleIndex: 0,
 };
 
 function getState() {
   const data = localStorage.getItem(DB_NAME);
-  
+
   if (!data) {
     saveState(defaultState);
     return defaultState;
   }
-  
-  
+
   try {
     return JSON.parse(data);
   } catch (e) {
     console.error("Falha ao analisar o estado local", e);
-    return defaultState; 
+    return defaultState;
   }
 }
-
 
 function saveState(state) {
   localStorage.setItem(DB_NAME, JSON.stringify(state));
-    
+
   if (channel) {
-    channel.postMessage({ type: 'STATE_UPDATED', state });
+    channel.postMessage({ type: "STATE_UPDATED", state });
   }
 }
 
-
 function subscribeToUpdates(callback) {
-  
   if (channel) {
     channel.onmessage = (event) => {
-      if (event.data && event.data.type === 'STATE_UPDATED') {
-        callback(event.data.state); 
+      if (event.data && event.data.type === "STATE_UPDATED") {
+        callback(event.data.state);
       }
     };
   }
-  
 
-  
-  window.addEventListener('storage', (event) => {
+  window.addEventListener("storage", (event) => {
     if (event.key === DB_NAME) {
       try {
         callback(JSON.parse(event.newValue));
@@ -73,31 +68,32 @@ function subscribeToUpdates(callback) {
   });
 }
 
-
 function generateTicket(service, type) {
   const state = getState();
-  const key = `${service}-${type}`; 
+  const key = `${service}-${type}`;
   const num = state.nextNumbers[key] || 1;
   state.nextNumbers[key] = num + 1;
 
-  let servicePrefix = 'E';
-  if (service === 'criminal') servicePrefix = 'C';
-  if (service === 'familia') servicePrefix = 'F';
-  
-  let typePrefix = 'N';
-  if (type === 'prioridade') typePrefix = 'P';
-  if (type === 'superprioridade') typePrefix = 'S';
-  
-  
-  const paddedNum = String(num).padStart(3, '0');
-  const code = `${servicePrefix}${typePrefix}-${paddedNum}`; 
+  let servicePrefix = "E";
+  if (service === "criminal") servicePrefix = "C";
+  if (service === "familia") servicePrefix = "F";
+
+  let typePrefix = "N";
+  if (type === "prioridade") typePrefix = "P";
+  if (type === "superprioridade") typePrefix = "S";
+
+  const paddedNum = String(num).padStart(3, "0");
+  const code = `${servicePrefix}${typePrefix}-${paddedNum}`;
   const newTicket = {
-    id: `${code}-${Date.now()}`, 
+    id: `${code}-${Date.now()}`,
     code: code,
     service: service,
     type: type,
-    status: 'waiting', 
-    createdAt: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    status: "waiting",
+    createdAt: new Date().toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
 
   state.queue.push(newTicket);
@@ -106,34 +102,42 @@ function generateTicket(service, type) {
 }
 function callTicket(ticketId, desk) {
   const state = getState();
-  const ticketIndex = state.queue.findIndex(t => t.id === ticketId);
+  const ticketIndex = state.queue.findIndex((t) => t.id === ticketId);
 
   if (ticketIndex === -1) return null;
 
   const ticket = state.queue[ticketIndex];
   if (state.currentTicket && state.currentTicket.id === ticketId) {
     if (channel) {
-      channel.postMessage({ type: 'RECALL_TICKET', ticket: state.currentTicket, desk });
+      channel.postMessage({
+        type: "RECALL_TICKET",
+        ticket: state.currentTicket,
+        desk,
+      });
     }
     return ticket;
   }
 
   if (state.currentTicket) {
-    
-    state.history = [state.currentTicket, ...state.history.filter(h => h.id !== state.currentTicket.id)].slice(0, 4);
+    state.history = [
+      state.currentTicket,
+      ...state.history.filter((h) => h.id !== state.currentTicket.id),
+    ].slice(0, 4);
   }
 
-
-  ticket.status = 'called';
+  ticket.status = "called";
   ticket.desk = desk;
-  ticket.calledAt = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  ticket.calledAt = new Date().toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   state.currentTicket = ticket;
   state.desks[desk] = ticket;
   state.queue[ticketIndex] = ticket;
   saveState(state);
   if (channel) {
-    channel.postMessage({ type: 'CALL_TICKET', ticket, desk });
+    channel.postMessage({ type: "CALL_TICKET", ticket, desk });
   }
 
   return ticket;
