@@ -1,0 +1,13 @@
+{
+  "name": "painel-senhas-defensoria",
+  "version": "1.0.0",
+  "description": "Sistema de Painel de Senhas em tempo real para redes locais",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}

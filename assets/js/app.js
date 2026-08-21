@@ -24,7 +24,47 @@ const defaultState = {
   cycleIndex: 0,
 };
 
+// Conectar ao servidor via WebSocket se a biblioteca estiver disponível (modo rede)
+const socket = typeof io !== 'undefined' ? io() : null;
+let serverState = null;
+let stateChangeCallback = null;
+
+if (socket) {
+  console.log("Conectado ao servidor do painel via WebSockets (modo rede)");
+  
+  // Escutar atualizações do servidor
+  socket.on('STATE_UPDATED', (state) => {
+    serverState = state;
+    localStorage.setItem(DB_NAME, JSON.stringify(state));
+    
+    // Notifica os escutas locais da página
+    if (stateChangeCallback) {
+      stateChangeCallback(state);
+    }
+    // Sincroniza abas locais se houver
+    if (channel) {
+      channel.postMessage({ type: "STATE_UPDATED", state });
+    }
+  });
+
+  // Escutar eventos específicos de chamadas (para reprodução de áudio/voz na TV)
+  socket.on('CALL_TICKET', ({ ticket, desk }) => {
+    if (channel) {
+      channel.postMessage({ type: "CALL_TICKET", ticket, desk });
+    }
+  });
+
+  socket.on('RECALL_TICKET', ({ ticket, desk }) => {
+    if (channel) {
+      channel.postMessage({ type: "RECALL_TICKET", ticket, desk });
+    }
+  });
+}
+
 function getState() {
+  if (socket && serverState) {
+    return serverState;
+  }
   const data = localStorage.getItem(DB_NAME);
 
   if (!data) {
@@ -41,18 +81,37 @@ function getState() {
 }
 
 function saveState(state) {
-  localStorage.setItem(DB_NAME, JSON.stringify(state));
-
-  if (channel) {
-    channel.postMessage({ type: "STATE_UPDATED", state });
+  if (socket) {
+    socket.emit('SYNC_STATE', state);
+  } else {
+    localStorage.setItem(DB_NAME, JSON.stringify(state));
+    if (channel) {
+      channel.postMessage({ type: "STATE_UPDATED", state });
+    }
   }
 }
 
 function subscribeToUpdates(callback) {
+  stateChangeCallback = callback;
+
   if (channel) {
     channel.onmessage = (event) => {
-      if (event.data && event.data.type === "STATE_UPDATED") {
-        callback(event.data.state);
+      if (event.data) {
+        if (event.data.type === "STATE_UPDATED") {
+          callback(event.data.state);
+        } else if (event.data.type === "CALL_TICKET" && typeof playChime !== 'undefined') {
+          // Trata eventos locais de som se estiver rodando localmente
+          const { ticket, desk } = event.data;
+          updateDisplay(getState());
+          animateCall();
+          playChime();
+          announceTicket(ticket, desk);
+        } else if (event.data.type === "RECALL_TICKET" && typeof playChime !== 'undefined') {
+          const { ticket, desk } = event.data;
+          animateCall();
+          playChime();
+          announceTicket(ticket, desk);
+        }
       }
     };
   }
@@ -100,6 +159,7 @@ function generateTicket(service, type) {
   saveState(state);
   return newTicket;
 }
+
 function callTicket(ticketId, desk) {
   const state = getState();
   const ticketIndex = state.queue.findIndex((t) => t.id === ticketId);
@@ -108,7 +168,9 @@ function callTicket(ticketId, desk) {
 
   const ticket = state.queue[ticketIndex];
   if (state.currentTicket && state.currentTicket.id === ticketId) {
-    if (channel) {
+    if (socket) {
+      socket.emit('RECALL_TICKET', { ticket: state.currentTicket, desk });
+    } else if (channel) {
       channel.postMessage({
         type: "RECALL_TICKET",
         ticket: state.currentTicket,
@@ -135,13 +197,20 @@ function callTicket(ticketId, desk) {
   state.currentTicket = ticket;
   state.desks[desk] = ticket;
   state.queue[ticketIndex] = ticket;
-  saveState(state);
-  if (channel) {
-    channel.postMessage({ type: "CALL_TICKET", ticket, desk });
+
+  if (socket) {
+    socket.emit('SYNC_STATE', state);
+    socket.emit('CALL_TICKET', { ticket, desk });
+  } else {
+    saveState(state);
+    if (channel) {
+      channel.postMessage({ type: "CALL_TICKET", ticket, desk });
+    }
   }
 
   return ticket;
 }
+
 function resetState() {
   saveState(defaultState);
 }

@@ -1,0 +1,6 @@
+# Node dependencies
+node_modules/
+
+# Local database/cache files
+.DS_Store
+*.log
