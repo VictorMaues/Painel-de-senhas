@@ -10,8 +10,8 @@ const io = new Server(server);
 
 const PORT = 3000;
 
-// Servir arquivos estáticos do diretório raiz
-app.use(express.static(__dirname));
+// Servir arquivos estáticos do diretório public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Estado global do painel mantido em memória no servidor
 let globalState = {
