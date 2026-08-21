@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
     body {
-      background-color: #090d16;
-      color: #f9fafb;
+      background-color: #f1f5f9;
+      color: var(--text-primary);
       height: 100vh;
       overflow: hidden;
       padding: 0;
@@ -28,16 +28,16 @@
       justify-content: center;
       align-items: center;
       padding: 3rem;
-      border-right: 2px solid #1f2937;
+      border-right: 2px solid #e2e8f0;
       text-align: center;
       position: relative;
-      background: radial-gradient(circle at center, #111b2d 0%, #090d16 100%);
+      background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
     }
 
     .call-title {
       font-size: 2rem;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 4px;
       margin-bottom: 2rem;
@@ -46,10 +46,11 @@
     .current-code {
       font-size: 10rem;
       font-weight: 900;
-      color: #ffffff;
+      color: var(--primary);
       line-height: 1;
       margin-bottom: 1.5rem;
       letter-spacing: -2px;
+      text-shadow: 0 4px 30px rgba(37, 99, 235, 0.15);
     }
 
     .current-details {
@@ -61,7 +62,7 @@
     .current-service {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #9ca3af;
+      color: #475569;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -69,30 +70,32 @@
     .current-desk {
       font-size: 3.5rem;
       font-weight: 800;
-      color: #3b82f6;
-      background: rgba(59, 130, 246, 0.1);
-      border: 2px solid rgba(59, 130, 246, 0.3);
+      color: var(--primary);
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
       padding: 0.5rem 2.5rem;
       border-radius: var(--radius-md);
       display: inline-block;
       margin-top: 1rem;
+      box-shadow: var(--shadow-md);
     }
 
     /* Right column: history */
     .history-panel {
-      background-color: #0b0f19;
+      background-color: #e2e8f0;
       display: flex;
       flex-direction: column;
       padding: 2rem;
+      border-left: 1px solid #cbd5e1;
     }
 
     .history-title {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #6b7280;
+      color: #475569;
       text-transform: uppercase;
       letter-spacing: 2px;
-      border-bottom: 2px solid #1f2937;
+      border-bottom: 2px solid #cbd5e1;
       padding-bottom: 1rem;
       margin-bottom: 1.5rem;
       text-align: center;
@@ -107,20 +110,27 @@
     }
 
     .history-item {
-      background-color: #111827;
-      border: 1px solid #1f2937;
+      background-color: #ffffff;
+      border: 1px solid #cbd5e1;
       border-radius: var(--radius-md);
       padding: 1.25rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: var(--shadow-sm);
       transition: var(--transition);
+    }
+
+    .history-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
     }
 
     .history-code {
       font-size: 2.25rem;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-primary);
     }
 
     .history-info {
@@ -130,12 +140,12 @@
     .history-desk {
       font-size: 1.25rem;
       font-weight: 700;
-      color: #3b82f6;
+      color: var(--primary);
     }
 
     .history-service {
       font-size: 0.8rem;
-      color: #6b7280;
+      color: #475569;
       text-transform: uppercase;
       margin-top: 0.25rem;
     }
@@ -151,15 +161,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(9, 13, 22, 0.8);
+      background: #f8fafc;
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid #1f2937;
+      border-bottom: 1px solid #e2e8f0;
       z-index: 10;
+      box-shadow: var(--shadow-sm);
     }
 
     .clock {
       font-size: 1.75rem;
       font-weight: 700;
+      color: var(--text-primary);
       font-variant-numeric: tabular-nums;
     }
 
@@ -169,8 +181,8 @@
       bottom: 1rem;
       left: 1rem;
       z-index: 10;
-      background: rgba(31, 41, 55, 0.8);
-      border: 1px solid #374151;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       padding: 0.5rem;
       display: flex;
@@ -182,26 +194,30 @@
       overflow: hidden;
       transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, background-color 0.3s ease;
       white-space: nowrap;
+      box-shadow: var(--shadow-md);
+      color: var(--text-primary);
     }
 
     .audio-config:hover {
       max-width: 20rem;
       padding: 0.5rem 1rem;
-      background: rgba(31, 41, 55, 0.95);
+      background: var(--bg-secondary);
+      border-color: var(--primary);
     }
   </style>
 </head>
 <body>
 
   <!-- Header Banner -->
-  <div class="panel-header" style="position: relative;">
-    <div class="logo">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-      </svg>
-      <span style="color: white;">DEFENSORIA PÚBLICA DO ESTÁDO DO PARÁ</span>
+  <div class="panel-header" style="position: relative; display: flex; justify-content: space-between; align-items: center; height: auto; padding: 1rem 3rem;">
+    <div class="logo" style="display: flex; align-items: center; gap: 12px;">
+      <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 45px; width: auto; object-fit: contain;">
+      <span style="color: var(--text-primary); font-weight: 700; font-size: 1.25rem;">Defensoria Publica do Estado do pará</span>
     </div>
-    <div class="clock" id="clock">00:00:00</div>
+    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+      <div class="clock" id="clock" style="line-height: 1;">00:00:00</div>
+      <div id="day-of-week" style="font-size: 0.95rem; font-weight: 600; color: #9ca3af; text-transform: capitalize;"></div>
+    </div>
   </div>
 
   <div class="panel-container">
@@ -243,6 +259,9 @@
     function updateClock() {
       const now = new Date();
       document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR');
+      
+      const options = { weekday: 'long' };
+      document.getElementById('day-of-week').textContent = now.toLocaleDateString('pt-BR', options);
     }
     setInterval(updateClock, 1000);
     updateClock();
