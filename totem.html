@@ -17,16 +17,26 @@
         width: 100%;
         text-align: center;
       }
+      .totem-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(circle at top, var(--primary-light) 0%, transparent 70%);
+        border-radius: var(--radius-lg);
+        margin-bottom: 3rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-secondary);
+      }
       .totem-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-weight: 800;
         color: var(--text-primary);
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
       }
       .totem-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         color: var(--text-secondary);
-        margin-bottom: 3rem;
+        max-width: 600px;
+        margin: 0 auto;
       }
       .step-section {
         display: none;
@@ -151,10 +161,12 @@
     </style>
   </head>
   <body>
+    <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 180px; margin-bottom: 1rem; object-fit: contain;">
     <div class="totem-container">
-    <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 180px; margin-bottom: 0; object-fit: contain;">
-    <div class="totem-title">Painel de Senhas</div>
-      <div class="totem-subtitle">Sistema de Autoatendimento</div>
+      <div class="totem-hero">
+        <div class="totem-title">Painel de Senhas</div>
+        <div class="totem-subtitle">Sistema de Autoatendimento</div>
+      </div>
 
       <!-- STEP 1: Select Service -->
       <div id="step-service" class="step-section active">

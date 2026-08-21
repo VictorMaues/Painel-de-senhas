@@ -1,157 +1,244 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Gerenciamento - Painel de Senhas</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <style>
-    .portal-hero {
-      text-align: center;
-      padding: 3rem 1rem;
-      background: radial-gradient(circle at top, var(--primary-light) 0%, transparent 70%);
-      border-radius: var(--radius-lg);
-      margin-bottom: 3rem;
-      border: 1px solid var(--border-color);
-    }
-    .portal-hero h1 {
-      font-size: 3rem;
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-    }
-    .portal-hero p {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .launch-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-bottom: 4rem;
-    }
-    .launch-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 2.5rem 2rem;
-      text-align: center;
-      transition: var(--transition);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
-    .launch-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-xl);
-      border-color: var(--primary);
-    }
-    .icon-wrapper {
-      background: var(--primary-light);
-      color: var(--primary);
-      width: 4.5rem;
-      height: 4.5rem;
-      border-radius: var(--radius-full);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    .icon-wrapper svg {
-      width: 2.25rem;
-      height: 2.25rem;
-    }
-    .features-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 2rem;
-    }
-    .features-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .feature-item {
-      display: flex;
-      gap: 1rem;
-    }
-    .feature-item svg {
-      width: 1.5rem;
-      height: 1.5rem;
-      color: var(--success);
-      flex-shrink: 0;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Gerenciamento - Painel de Senhas</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .portal-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(
+          circle at top,
+          var(--primary-light) 0%,
+          transparent 70%
+        );
+        border-radius: var(--radius-lg);
+        margin-bottom: 3rem;
+        border: 1px solid var(--border-color);
+      }
+      .portal-hero h1 {
+        font-size: 3rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+      .portal-hero p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .launch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+      }
+      .launch-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+      }
+      .launch-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary);
+      }
+      .icon-wrapper {
+        background: var(--primary-light);
+        color: var(--primary);
+        width: 4.5rem;
+        height: 4.5rem;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      .icon-wrapper svg {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+      .features-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+      }
+      .features-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .feature-item {
+        display: flex;
+        gap: 1rem;
+      }
+      .feature-item svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--success);
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img
+          src="assets/img/logo.png"
+          alt="Logo Defensoria"
+          style="height: 60px; width: auto; object-fit: contain"
+        />
+        <span>Sistema de Gerenciamento - Painel de Senhas</span>
+      </div>
+    </header>
 
-  <header>
-    <div class="logo">
-    <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 60px; width: auto; object-fit: contain;">
-    <span>Sistema de Gerenciamento - Painel de Senhas</span>
-    </div>
-  </header>
-
-  <main>
-    <div class="portal-hero">
-      <h1>Portal do Sistema de Senhas</h1>
-      <p>Gerenciamento inteligente e em tempo real para atendimento ao cidadão nas Varas Criminais e de Família.</p>
-    </div>
-
-    <div class="launch-grid">
-      <!-- Card 1: Totem -->
-      <div class="launch-card">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <div class="icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-            </svg>
-          </div>
-          <h2>1. Totem de Autoatendimento</h2>
-          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.5rem;">Tela interativa para o cliente selecionar o serviço e emitir a senha (normal ou prioridade).</p>
-        </div>
-        <a href="totem.html" target="_blank" class="btn btn-primary" style="width: 100%;">Abrir Totem</a>
+    <main>
+      <div class="portal-hero">
+        <h1>Portal do Sistema de Senhas</h1>
+        <p>
+          Gerenciamento inteligente e em tempo real para atendimento ao cidadão
+          nas Varas Criminais e de Família.
+        </p>
       </div>
 
-      <!-- Card 2: TV Panel -->
-      <div class="launch-card">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <div class="icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125Z" />
-            </svg>
+      <div class="launch-grid">
+        <!-- Card 1: Totem -->
+        <div class="launch-card">
+          <div
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <div class="icon-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+                />
+              </svg>
+            </div>
+            <h2>1. Totem de Autoatendimento</h2>
+            <p
+              style="
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                margin-top: 0.5rem;
+              "
+            >
+              Tela interativa para o cliente selecionar o serviço e emitir a
+              senha (normal ou prioridade).
+            </p>
           </div>
-          <h2>2. Painel de TV (Exibição)</h2>
-          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.5rem;">Painel público de TV para a sala de espera. Exibe a última senha com alertas sonoros e voz.</p>
+          <a
+            href="totem.html"
+            target="_blank"
+            class="btn btn-primary"
+            style="width: 100%"
+            >Abrir Totem</a
+          >
         </div>
-        <a href="painel.html" target="_blank" class="btn btn-primary" style="width: 100%;">Abrir Painel de TV</a>
-      </div>
 
-      <!-- Card 3: Operator -->
-      <div class="launch-card">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <div class="icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
-            </svg>
+        <!-- Card 2: TV Panel -->
+        <div class="launch-card">
+          <div
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <div class="icon-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125Z"
+                />
+              </svg>
+            </div>
+            <h2>2. Painel de TV (Exibição)</h2>
+            <p
+              style="
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                margin-top: 0.5rem;
+              "
+            >
+              Painel público de TV para a sala de espera. Exibe a última senha
+              com alertas sonoros e voz.
+            </p>
           </div>
-          <h2>3. Painel do Operador</h2>
-          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.5rem;">Painel do funcionário no guichê. Permite chamar a próxima senha da fila em tempo real.</p>
+          <a
+            href="painel.html"
+            target="_blank"
+            class="btn btn-primary"
+            style="width: 100%"
+            >Abrir Painel de TV</a
+          >
         </div>
-        <a href="operador.html" target="_blank" class="btn btn-primary" style="width: 100%;">Abrir Operador</a>
+
+        <!-- Card 3: Operator -->
+        <div class="launch-card">
+          <div
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <div class="icon-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"
+                />
+              </svg>
+            </div>
+            <h2>3. Painel do Operador</h2>
+            <p
+              style="
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                margin-top: 0.5rem;
+              "
+            >
+              Painel do funcionário no guichê. Permite chamar a próxima senha da
+              fila em tempo real.
+            </p>
+          </div>
+          <a
+            href="operador.html"
+            target="_blank"
+            class="btn btn-primary"
+            style="width: 100%"
+            >Abrir Operador</a
+          >
+        </div>
       </div>
-    </div>
- 
-  </main>
+    </main>
 
-  <footer>
-    Painel de Senha Teste | 2026
-  </footer>
-
-</body>
+    <footer>Painel de Senha Teste | 2026</footer>
+  </body>
 </html>
