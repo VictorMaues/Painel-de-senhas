@@ -175,13 +175,7 @@
         </h2>
         <div class="options-grid">
           <div class="option-card" onclick="selectService('criminal')">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-shield-icon lucide-user-shield"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="M22 17.5c0 2.499-1.75 3.749-3.83 4.474a.5.5 0 0 1-.335-.005c-2.085-.72-3.835-1.97-3.835-4.47V14a.5.5 0 0 1 .5-.499c1 0 2.25-.6 3.12-1.36a.6.6 0 0 1 .76-.001c.875.765 2.12 1.36 3.12 1.36a.5.5 0 0 1 .5.5z"/><circle cx="9" cy="7" r="4"/></svg>
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -211,23 +205,17 @@
           </div>
 
           <div class="option-card" onclick="selectService('execucao-penal')">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-graduation-cap-icon lucide-graduation-cap"
-            >
-              <path
-                d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"
-              />
-              <path d="M22 10v6" />
-              <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" />
+            <svg xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            class="lucide lucide-shield-icon lucide-shield">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
             </svg>
             <h3>Vara Execução Penal</h3>
             <p>Legislação e Normas, Regimes e Penas, Direitos e Garantias</p>
@@ -366,6 +354,16 @@
           section.classList.remove("active");
         });
         document.getElementById(stepId).classList.add("active");
+
+        // Oculta o cabeçalho (logo, título e subtítulo) na tela de sucesso/impressão
+        const hero = document.querySelector(".totem-hero");
+        if (hero) {
+          if (stepId === "step-success") {
+            hero.style.display = "none";
+          } else {
+            hero.style.display = "block";
+          }
+        }
       }
 
       function selectService(service) {
