@@ -1,417 +1,553 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Operador - Chamador de Senhas</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <style>
-    .operator-container {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 2rem;
-    }
-    .desk-selector {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .desk-selector select {
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      font-size: 1rem;
-      font-weight: 600;
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-    }
-    .queue-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .queue-list {
-      max-height: 450px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      padding-right: 0.5rem;
-    }
-    .queue-item {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: var(--transition);
-    }
-    .queue-item:hover {
-      border-color: var(--primary);
-    }
-    .queue-code {
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    .queue-details {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-    .current-serving {
-      background: var(--primary-light);
-      border: 1px solid var(--primary);
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .action-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .tab-nav {
-      display: flex;
-      gap: 1rem;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.5rem;
-    }
-    .tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 0.5rem 1rem;
-      position: relative;
-    }
-    .tab-btn.active {
-      color: var(--primary);
-    }
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -0.6rem;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background-color: var(--primary);
-      border-radius: var(--radius-full);
-    }
-    .reset-btn {
-      color: var(--danger);
-      background: none;
-      border: 1px solid var(--border-color);
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: var(--transition);
-    }
-    .reset-btn:hover {
-      background-color: var(--danger-light);
-      border-color: var(--danger);
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <div class="logo">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-      </svg>
-      <span>Painel do Operador</span>
-    </div>
-    
-    <div style="display: flex; align-items: center; gap: 1.5rem;">
-      <div class="desk-selector">
-        <label for="desk-select">Guichê:</label>
-        <select id="desk-select" onchange="changeDesk()">
-          <option value="1">Guichê 1</option>
-          <option value="2">Guichê 2</option>
-          <option value="3">Guichê 3</option>
-          <option value="4">Guichê 4</option>
-          <option value="5">Guichê 5</option>
-        </select>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel do Operador - Chamador de Senhas</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .operator-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+      }
+      .desk-selector {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      .desk-selector select {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+        font-size: 1rem;
+        font-weight: 600;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+      .queue-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .queue-list {
+        max-height: 450px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-right: 0.5rem;
+      }
+      .queue-item {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+      }
+      .queue-item:hover {
+        border-color: var(--primary);
+      }
+      .queue-code {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      .queue-details {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+      .current-serving {
+        background: var(--primary-light);
+        border: 1px solid var(--primary);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .tab-nav {
+        display: flex;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .tab-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        position: relative;
+      }
+      .tab-btn.active {
+        color: var(--primary);
+      }
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -0.6rem;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--primary);
+        border-radius: var(--radius-full);
+      }
+      .reset-btn {
+        color: var(--danger);
+        background: none;
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+      .reset-btn:hover {
+        background-color: var(--danger-light);
+        border-color: var(--danger);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img
+          src="assets/img/logo.png"
+          alt="Logo Defensoria"
+          style="height: 70px; width: auto; object-fit: contain"
+        />
+        <span>Painel do Operador</span>
       </div>
-      <button class="reset-btn" onclick="confirmReset()">Limpar Painel</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="operator-container">
-      
-      <!-- Left column: active serving desk status -->
-      <div>
-        <div class="current-serving">
-          <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary);">Atendimento Atual</h2>
-          <div id="active-code" style="font-size: 3.5rem; font-weight: 800; color: var(--text-primary); margin: 0.5rem 0;">---</div>
-          <div id="active-info" style="color: var(--text-secondary); margin-bottom: 1rem;">Nenhuma senha em atendimento</div>
-          <button class="btn btn-primary" id="btn-recall" onclick="recallCurrent()" style="width: 100%; display: none;">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:1.25rem; height:1.25rem;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-            </svg>
-            Chamar Novamente
+      <div style="display: flex; align-items: center; gap: 1.5rem">
+        <div class="desk-selector">
+          <label for="desk-select">Guichê:</label>
+          <select id="desk-select" onchange="changeDesk()">
+            <option value="1">Guichê 1</option>
+            <option value="2">Guichê 2</option>
+            <option value="3">Guichê 3</option>
+            <option value="4">Guichê 4</option>
+            <option value="5">Guichê 5</option>
+          </select>
+          <button class="reset-btn" onclick="confirmReset()">
+            Limpar Painel
           </button>
-        </div>        <div class="card" style="padding: 1.5rem;">
-          <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Filas Disponíveis</h2>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Criminal Comum:</span>
-              <strong id="count-crim-norm">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="operator-container">
+        <!-- Left column: active serving desk status -->
+        <div>
+          <div class="current-serving">
+            <h2
+              style="
+                font-size: 1.25rem;
+                margin-bottom: 0.5rem;
+                color: var(--primary);
+              "
+            >
+              Atendimento Atual
+            </h2>
+            <div
+              id="active-code"
+              style="
+                font-size: 3.5rem;
+                font-weight: 800;
+                color: var(--text-primary);
+                margin: 0.5rem 0;
+              "
+            >
+              ---
             </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Criminal Preferencial:</span>
-              <strong id="count-crim-prio" style="color: var(--warning);">0</strong>
+            <div
+              id="active-info"
+              style="color: var(--text-secondary); margin-bottom: 1rem"
+            >
+              Nenhuma senha em atendimento
             </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Criminal Superprioridade:</span>
-              <strong id="count-crim-super" style="color: var(--danger);">0</strong>
+            <button
+              class="btn btn-primary"
+              id="btn-recall"
+              onclick="recallCurrent()"
+              style="width: 100%; display: none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                style="width: 1.25rem; height: 1.25rem"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"
+                />
+              </svg>
+              Chamar Novamente
+            </button>
+          </div>
+          <div class="card" style="padding: 1.5rem">
+            <h2 style="font-size: 1.1rem; margin-bottom: 1rem">
+              Filas Disponíveis
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem">
+              <div style="display: flex; justify-content: space-between">
+                <span>Criminal Comum:</span>
+                <strong id="count-crim-norm">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Criminal Preferencial:</span>
+                <strong id="count-crim-prio" style="color: var(--warning)"
+                  >0</strong
+                >
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Criminal Superprioridade:</span>
+                <strong id="count-crim-super" style="color: var(--danger)"
+                  >0</strong
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  border-top: 1px solid var(--border-color);
+                  padding-top: 0.5rem;
+                "
+              >
+                <span>Família Comum:</span>
+                <strong id="count-fam-norm">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Família Preferencial:</span>
+                <strong id="count-fam-prio" style="color: var(--warning)"
+                  >0</strong
+                >
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Família Superprioridade:</span>
+                <strong id="count-fam-super" style="color: var(--danger)"
+                  >0</strong
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  border-top: 1px solid var(--border-color);
+                  padding-top: 0.5rem;
+                "
+              >
+                <span>Exec. Penal Comum:</span>
+                <strong id="count-exec-norm">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Exec. Penal Preferencial:</span>
+                <strong id="count-exec-prio" style="color: var(--warning)"
+                  >0</strong
+                >
+              </div>
+              <div style="display: flex; justify-content: space-between">
+                <span>Exec. Penal Superprioridade:</span>
+                <strong id="count-exec-super" style="color: var(--danger)"
+                  >0</strong
+                >
+              </div>
             </div>
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
-              <span>Família Comum:</span>
-              <strong id="count-fam-norm">0</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Família Preferencial:</span>
-              <strong id="count-fam-prio" style="color: var(--warning);">0</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Família Superprioridade:</span>
-              <strong id="count-fam-super" style="color: var(--danger);">0</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
-              <span>Exec. Penal Comum:</span>
-              <strong id="count-exec-norm">0</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Exec. Penal Preferencial:</span>
-              <strong id="count-exec-prio" style="color: var(--warning);">0</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span>Exec. Penal Superprioridade:</span>
-              <strong id="count-exec-super" style="color: var(--danger);">0</strong>
+          </div>
+        </div>
+
+        <!-- Right column: action buttons and queues -->
+        <div>
+          <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem">
+            Ações de Chamada
+          </h2>
+
+          <div class="action-buttons">
+            <button
+              class="btn btn-primary"
+              onclick="callNext('any')"
+              style="
+                background-color: var(--success);
+                font-size: 1.1rem;
+                padding: 1rem 1.5rem;
+              "
+            >
+              Próximo Geral (Pref. Primeiro)
+            </button>
+            <button class="btn btn-secondary" onclick="callNext('criminal')">
+              Próximo Criminal
+            </button>
+            <button class="btn btn-secondary" onclick="callNext('familia')">
+              Próximo Família
+            </button>
+            <button
+              class="btn btn-secondary"
+              onclick="callNext('execucao-penal')"
+            >
+              Próximo Exec. Penal
+            </button>
+          </div>
+
+          <div class="tab-nav">
+            <button class="tab-btn active" id="tab-all" onclick="setTab('all')">
+              Todas as Senhas
+            </button>
+            <button
+              class="tab-btn"
+              id="tab-criminal"
+              onclick="setTab('criminal')"
+            >
+              Vara Criminal
+            </button>
+            <button
+              class="tab-btn"
+              id="tab-familia"
+              onclick="setTab('familia')"
+            >
+              Vara de Família
+            </button>
+            <button
+              class="tab-btn"
+              id="tab-execucao-penal"
+              onclick="setTab('execucao-penal')"
+            >
+              Execução Penal
+            </button>
+          </div>
+
+          <div class="queue-section">
+            <h3>Fila de Espera</h3>
+            <div class="queue-list" id="queue-list-container">
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
       </div>
+    </main>
 
-      <!-- Right column: action buttons and queues -->
-      <div>
-        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Ações de Chamada</h2>
-        
-        <div class="action-buttons">
-          <button class="btn btn-primary" onclick="callNext('any')" style="background-color: var(--success); font-size: 1.1rem; padding: 1rem 1.5rem;">
-            Próximo Geral (Pref. Primeiro)
-          </button>
-          <button class="btn btn-secondary" onclick="callNext('criminal')">
-            Próximo Criminal
-          </button>
-          <button class="btn btn-secondary" onclick="callNext('familia')">
-            Próximo Família
-          </button>
-          <button class="btn btn-secondary" onclick="callNext('execucao-penal')">
-            Próximo Exec. Penal
-          </button>
-        </div>
+    <footer>Painel de Senha Teste © 2026</footer>
 
-        <div class="tab-nav">
-          <button class="tab-btn active" id="tab-all" onclick="setTab('all')">Todas as Senhas</button>
-          <button class="tab-btn" id="tab-criminal" onclick="setTab('criminal')">Vara Criminal</button>
-          <button class="tab-btn" id="tab-familia" onclick="setTab('familia')">Vara de Família</button>
-          <button class="tab-btn" id="tab-execucao-penal" onclick="setTab('execucao-penal')">Execução Penal</button>
-        </div>
+    <script src="assets/js/app.js"></script>
+    <script>
+      let activeTab = "all";
+      let selectedDesk = "1";
 
-        <div class="queue-section">
-          <h3>Fila de Espera</h3>
-          <div class="queue-list" id="queue-list-container">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer>
-  Painel de Senha Teste © 2026
-  </footer>
-
-  <script src="assets/js/app.js"></script>
-  <script>
-    let activeTab = 'all';
-    let selectedDesk = '1';
-
-    // Get selected desk from cache/setting
-    if (sessionStorage.getItem('operator_desk')) {
-      selectedDesk = sessionStorage.getItem('operator_desk');
-      document.getElementById('desk-select').value = selectedDesk;
-    }
-
-    function changeDesk() {
-      selectedDesk = document.getElementById('desk-select').value;
-      sessionStorage.setItem('operator_desk', selectedDesk);
-      render();
-    }
-
-    function setTab(tab) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(`tab-${tab}`).classList.add('active');
-      activeTab = tab;
-      render();
-    }
-
-    function callSpecific(ticketId) {
-      callTicket(ticketId, selectedDesk);
-      render();
-    }
-
-    function recallCurrent() {
-      const state = getState();
-      const myActive = state.desks[selectedDesk];
-      if (myActive) {
-        callTicket(myActive.id, selectedDesk);
-      }
-    }
-
-    function callNext(scope) {
-      const state = getState();
-      const waiting = state.queue.filter(t => t.status === 'waiting');
-      
-      if (waiting.length === 0) {
-        alert("Não há senhas aguardando atendimento.");
-        return;
+      // Get selected desk from cache/setting
+      if (sessionStorage.getItem("operator_desk")) {
+        selectedDesk = sessionStorage.getItem("operator_desk");
+        document.getElementById("desk-select").value = selectedDesk;
       }
 
-      // Filter based on scope (criminal, familia, execucao-penal, or any)
-      let filtered = waiting;
-      if (scope === 'criminal') {
-        filtered = waiting.filter(t => t.service === 'criminal');
-      } else if (scope === 'familia') {
-        filtered = waiting.filter(t => t.service === 'familia');
-      } else if (scope === 'execucao-penal') {
-        filtered = waiting.filter(t => t.service === 'execucao-penal');
+      function changeDesk() {
+        selectedDesk = document.getElementById("desk-select").value;
+        sessionStorage.setItem("operator_desk", selectedDesk);
+        render();
       }
 
-      if (filtered.length === 0) {
-        alert("Não há senhas na fila selecionada.");
-        return;
+      function setTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        document.getElementById(`tab-${tab}`).classList.add("active");
+        activeTab = tab;
+        render();
       }
 
-      // Sequência cíclica de 5 atendimentos: 2 Superprioridades, 2 Preferenciais, 1 Comum (S, S, P, P, C)
-      const cycleSequence = ['superprioridade', 'superprioridade', 'prioridade', 'prioridade', 'normal'];
-      let nextTicket = null;
-      let targetIndex = state.cycleIndex || 0;
-      
-      // Procura a senha correspondente na sequência do ciclo, avançando caso não haja senhas do tipo desejado
-      for (let offset = 0; offset < 5; offset++) {
-        const checkIndex = (targetIndex + offset) % 5;
-        const targetType = cycleSequence[checkIndex];
-        const ticketsOfType = filtered.filter(t => t.type === targetType);
-        
-        if (ticketsOfType.length > 0) {
-          nextTicket = ticketsOfType[0];
-          // Avança o índice do ciclo para a posição seguinte à do ticket atendido
-          state.cycleIndex = (checkIndex + 1) % 5;
-          saveState(state); // Salva o novo índice no estado global
-          break;
+      function callSpecific(ticketId) {
+        callTicket(ticketId, selectedDesk);
+        render();
+      }
+
+      function recallCurrent() {
+        const state = getState();
+        const myActive = state.desks[selectedDesk];
+        if (myActive) {
+          callTicket(myActive.id, selectedDesk);
         }
       }
-      
-      if (nextTicket) {
-        callTicket(nextTicket.id, selectedDesk);
-        render();
-      }
-    }
 
-    function confirmReset() {
-      if (confirm("Tem certeza que deseja limpar todo o painel e resetar o contador de senhas?")) {
-        resetState();
-        render();
-      }
-    }
+      function callNext(scope) {
+        const state = getState();
+        const waiting = state.queue.filter((t) => t.status === "waiting");
 
-    function render() {
-      const state = getState();
-      const waiting = state.queue.filter(t => t.status === 'waiting');
-      
-      // Update counters
-      document.getElementById('count-crim-norm').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'normal').length;
-      document.getElementById('count-crim-prio').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'prioridade').length;
-      document.getElementById('count-crim-super').textContent = waiting.filter(t => t.service === 'criminal' && t.type === 'superprioridade').length;
-      document.getElementById('count-fam-norm').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'normal').length;
-      document.getElementById('count-fam-prio').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'prioridade').length;
-      document.getElementById('count-fam-super').textContent = waiting.filter(t => t.service === 'familia' && t.type === 'superprioridade').length;
-      document.getElementById('count-exec-norm').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'normal').length;
-      document.getElementById('count-exec-prio').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'prioridade').length;
-      document.getElementById('count-exec-super').textContent = waiting.filter(t => t.service === 'execucao-penal' && t.type === 'superprioridade').length;
+        if (waiting.length === 0) {
+          alert("Não há senhas aguardando atendimento.");
+          return;
+        }
 
-      // Update current serving at this desk
-      const myActive = state.desks[selectedDesk];
-      const activeCodeEl = document.getElementById('active-code');
-      const activeInfoEl = document.getElementById('active-info');
-      const recallBtn = document.getElementById('btn-recall');
+        // Filter based on scope (criminal, familia, execucao-penal, or any)
+        let filtered = waiting;
+        if (scope === "criminal") {
+          filtered = waiting.filter((t) => t.service === "criminal");
+        } else if (scope === "familia") {
+          filtered = waiting.filter((t) => t.service === "familia");
+        } else if (scope === "execucao-penal") {
+          filtered = waiting.filter((t) => t.service === "execucao-penal");
+        }
 
-      if (myActive) {
-        activeCodeEl.textContent = myActive.code;
-        let serviceLabel = 'Família';
-        if (myActive.service === 'criminal') serviceLabel = 'Criminal';
-        if (myActive.service === 'execucao-penal') serviceLabel = 'Exec. Penal';
-        
-        let typeLabel = 'Comum';
-        if (myActive.type === 'prioridade') typeLabel = 'Preferencial';
-        if (myActive.type === 'superprioridade') typeLabel = 'Superprioridade';
-        activeInfoEl.textContent = `${serviceLabel} - ${typeLabel} (Chamado às ${myActive.calledAt})`;
-        recallBtn.style.display = 'inline-flex';
-      } else {
-        activeCodeEl.textContent = '---';
-        activeInfoEl.textContent = 'Nenhuma senha em atendimento';
-        recallBtn.style.display = 'none';
-      }
+        if (filtered.length === 0) {
+          alert("Não há senhas na fila selecionada.");
+          return;
+        }
 
-      // Filter queue list based on active tab
-      let list = waiting;
-      if (activeTab === 'criminal') {
-        list = waiting.filter(t => t.service === 'criminal');
-      } else if (activeTab === 'familia') {
-        list = waiting.filter(t => t.service === 'familia');
-      } else if (activeTab === 'execucao-penal') {
-        list = waiting.filter(t => t.service === 'execucao-penal');
+        // Sequência cíclica de 5 atendimentos: 2 Superprioridades, 2 Preferenciais, 1 Comum (S, S, P, P, C)
+        const cycleSequence = [
+          "superprioridade",
+          "superprioridade",
+          "prioridade",
+          "prioridade",
+          "normal",
+        ];
+        let nextTicket = null;
+        let targetIndex = state.cycleIndex || 0;
+
+        // Procura a senha correspondente na sequência do ciclo, avançando caso não haja senhas do tipo desejado
+        for (let offset = 0; offset < 5; offset++) {
+          const checkIndex = (targetIndex + offset) % 5;
+          const targetType = cycleSequence[checkIndex];
+          const ticketsOfType = filtered.filter((t) => t.type === targetType);
+
+          if (ticketsOfType.length > 0) {
+            nextTicket = ticketsOfType[0];
+            // Avança o índice do ciclo para a posição seguinte à do ticket atendido
+            state.cycleIndex = (checkIndex + 1) % 5;
+            saveState(state); // Salva o novo índice no estado global
+            break;
+          }
+        }
+
+        if (nextTicket) {
+          callTicket(nextTicket.id, selectedDesk);
+          render();
+        }
       }
 
-      // Sort: superprioridade first, then prioridade, then normal
-      list.sort((a, b) => {
-        const getPriorityWeight = (type) => {
-          if (type === 'superprioridade') return 2;
-          if (type === 'prioridade') return 1;
-          return 0;
-        };
-        return getPriorityWeight(b.type) - getPriorityWeight(a.type);
-      });
+      function confirmReset() {
+        if (
+          confirm(
+            "Tem certeza que deseja limpar todo o painel e resetar o contador de senhas?",
+          )
+        ) {
+          resetState();
+          render();
+        }
+      }
 
-      const container = document.getElementById('queue-list-container');
-      if (list.length === 0) {
-        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Fila vazia.</div>`;
-      } else {
-        container.innerHTML = list.map(t => {
-          let serviceName = 'Família';
-          if (t.service === 'criminal') serviceName = 'Vara Criminal';
-          if (t.service === 'execucao-penal') serviceName = 'Execução Penal';
-          
-          return `
+      function render() {
+        const state = getState();
+        const waiting = state.queue.filter((t) => t.status === "waiting");
+
+        // Update counters
+        document.getElementById("count-crim-norm").textContent = waiting.filter(
+          (t) => t.service === "criminal" && t.type === "normal",
+        ).length;
+        document.getElementById("count-crim-prio").textContent = waiting.filter(
+          (t) => t.service === "criminal" && t.type === "prioridade",
+        ).length;
+        document.getElementById("count-crim-super").textContent =
+          waiting.filter(
+            (t) => t.service === "criminal" && t.type === "superprioridade",
+          ).length;
+        document.getElementById("count-fam-norm").textContent = waiting.filter(
+          (t) => t.service === "familia" && t.type === "normal",
+        ).length;
+        document.getElementById("count-fam-prio").textContent = waiting.filter(
+          (t) => t.service === "familia" && t.type === "prioridade",
+        ).length;
+        document.getElementById("count-fam-super").textContent = waiting.filter(
+          (t) => t.service === "familia" && t.type === "superprioridade",
+        ).length;
+        document.getElementById("count-exec-norm").textContent = waiting.filter(
+          (t) => t.service === "execucao-penal" && t.type === "normal",
+        ).length;
+        document.getElementById("count-exec-prio").textContent = waiting.filter(
+          (t) => t.service === "execucao-penal" && t.type === "prioridade",
+        ).length;
+        document.getElementById("count-exec-super").textContent =
+          waiting.filter(
+            (t) =>
+              t.service === "execucao-penal" && t.type === "superprioridade",
+          ).length;
+
+        // Update current serving at this desk
+        const myActive = state.desks[selectedDesk];
+        const activeCodeEl = document.getElementById("active-code");
+        const activeInfoEl = document.getElementById("active-info");
+        const recallBtn = document.getElementById("btn-recall");
+
+        if (myActive) {
+          activeCodeEl.textContent = myActive.code;
+          let serviceLabel = "Família";
+          if (myActive.service === "criminal") serviceLabel = "Criminal";
+          if (myActive.service === "execucao-penal")
+            serviceLabel = "Exec. Penal";
+
+          let typeLabel = "Comum";
+          if (myActive.type === "prioridade") typeLabel = "Preferencial";
+          if (myActive.type === "superprioridade")
+            typeLabel = "Superprioridade";
+          activeInfoEl.textContent = `${serviceLabel} - ${typeLabel} (Chamado às ${myActive.calledAt})`;
+          recallBtn.style.display = "inline-flex";
+        } else {
+          activeCodeEl.textContent = "---";
+          activeInfoEl.textContent = "Nenhuma senha em atendimento";
+          recallBtn.style.display = "none";
+        }
+
+        // Filter queue list based on active tab
+        let list = waiting;
+        if (activeTab === "criminal") {
+          list = waiting.filter((t) => t.service === "criminal");
+        } else if (activeTab === "familia") {
+          list = waiting.filter((t) => t.service === "familia");
+        } else if (activeTab === "execucao-penal") {
+          list = waiting.filter((t) => t.service === "execucao-penal");
+        }
+
+        // Sort: superprioridade first, then prioridade, then normal
+        list.sort((a, b) => {
+          const getPriorityWeight = (type) => {
+            if (type === "superprioridade") return 2;
+            if (type === "prioridade") return 1;
+            return 0;
+          };
+          return getPriorityWeight(b.type) - getPriorityWeight(a.type);
+        });
+
+        const container = document.getElementById("queue-list-container");
+        if (list.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Fila vazia.</div>`;
+        } else {
+          container.innerHTML = list
+            .map((t) => {
+              let serviceName = "Família";
+              if (t.service === "criminal") serviceName = "Vara Criminal";
+              if (t.service === "execucao-penal")
+                serviceName = "Execução Penal";
+
+              return `
             <div class="queue-item">
               <div>
                 <div class="queue-code">${t.code}</div>
                 <div class="queue-details">
-                  <span class="badge ${t.type === 'superprioridade' ? 'badge-super' : (t.type === 'prioridade' ? 'badge-priority' : 'badge-normal')}">${t.type === 'superprioridade' ? 'Superprioridade' : (t.type === 'prioridade' ? 'Preferencial' : 'Comum')}</span>
+                  <span class="badge ${t.type === "superprioridade" ? "badge-super" : t.type === "prioridade" ? "badge-priority" : "badge-normal"}">${t.type === "superprioridade" ? "Superprioridade" : t.type === "prioridade" ? "Preferencial" : "Comum"}</span>
                   <span>${serviceName}</span>
                   <span style="margin-left: 0.5rem; color: var(--text-muted);">${t.createdAt}</span>
                 </div>
@@ -421,17 +557,18 @@
               </button>
             </div>
           `;
-        }).join('');
+            })
+            .join("");
+        }
       }
-    }
 
-    // Subscribe to real-time events
-    subscribeToUpdates(() => {
+      // Subscribe to real-time events
+      subscribeToUpdates(() => {
+        render();
+      });
+
+      // Initial render
       render();
-    });
-
-    // Initial render
-    render();
-  </script>
-</body>
+    </script>
+  </body>
 </html>

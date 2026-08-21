@@ -1,437 +1,497 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Exibição - Chamada de Senhas</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <style>
-    body {
-      background-color: #f1f5f9;
-      color: var(--text-primary);
-      height: 100vh;
-      overflow: hidden;
-      padding: 0;
-    }
-    
-    /* Layout split: 70% left for current ticket, 30% right for history */
-    .panel-container {
-      display: grid;
-      grid-template-columns: 7fr 3fr;
-      height: 100vh;
-      width: 100%;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Exibição - Chamada de Senhas</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      body {
+        background-color: #f1f5f9;
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        padding: 0;
+      }
 
-    .main-call {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 3rem;
-      border-right: 2px solid #e2e8f0;
-      text-align: center;
-      position: relative;
-      background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
-    }
+      /* Layout split: 70% left for current ticket, 30% right for history */
+      .panel-container {
+        display: grid;
+        grid-template-columns: 7fr 3fr;
+        height: 100vh;
+        width: 100%;
+      }
 
-    .call-title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      margin-bottom: 2rem;
-    }
+      .main-call {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+        border-right: 2px solid #e2e8f0;
+        text-align: center;
+        position: relative;
+        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+      }
 
-    .current-code {
-      font-size: 10rem;
-      font-weight: 900;
-      color: var(--primary);
-      line-height: 1;
-      margin-bottom: 1.5rem;
-      letter-spacing: -2px;
-      text-shadow: 0 4px 30px rgba(37, 99, 235, 0.15);
-    }
+      .call-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        margin-bottom: 2rem;
+      }
 
-    .current-details {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+      .current-code {
+        font-size: 10rem;
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -2px;
+        text-shadow: 0 4px 30px rgba(37, 99, 235, 0.15);
+      }
 
-    .current-service {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+      .current-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
 
-    .current-desk {
-      font-size: 3.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      background: var(--primary-light);
-      border: 2px solid var(--primary);
-      padding: 0.5rem 2.5rem;
-      border-radius: var(--radius-md);
-      display: inline-block;
-      margin-top: 1rem;
-      box-shadow: var(--shadow-md);
-    }
+      .current-service {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-    /* Right column: history */
-    .history-panel {
-      background-color: #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem;
-      border-left: 1px solid #cbd5e1;
-    }
+      .current-desk {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        background: var(--primary-light);
+        border: 2px solid var(--primary);
+        padding: 0.5rem 2.5rem;
+        border-radius: var(--radius-md);
+        display: inline-block;
+        margin-top: 1rem;
+        box-shadow: var(--shadow-md);
+      }
 
-    .history-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 2px solid #cbd5e1;
-      padding-bottom: 1rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+      /* Right column: history */
+      .history-panel {
+        background-color: #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+        border-left: 1px solid #cbd5e1;
+      }
 
-    .history-list {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      overflow-y: auto;
-    }
+      .history-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border-bottom: 2px solid #cbd5e1;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
 
-    .history-item {
-      background-color: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
+      .history-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        overflow-y: auto;
+      }
 
-    .history-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary);
-    }
+      .history-item {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+      }
 
-    .history-code {
-      font-size: 2.25rem;
-      font-weight: 800;
-      color: var(--text-primary);
-    }
+      .history-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary);
+      }
 
-    .history-info {
-      text-align: right;
-    }
+      .history-code {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--text-primary);
+      }
 
-    .history-desk {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
+      .history-info {
+        text-align: right;
+      }
 
-    .history-service {
-      font-size: 0.8rem;
-      color: #475569;
-      text-transform: uppercase;
-      margin-top: 0.25rem;
-    }
+      .history-desk {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
 
-    /* Top banner/header for time and date */
-    .panel-header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 70px;
-      padding: 0 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #e2e8f0;
-      z-index: 10;
-      box-shadow: var(--shadow-sm);
-    }
+      .history-service {
+        font-size: 0.8rem;
+        color: #475569;
+        text-transform: uppercase;
+        margin-top: 0.25rem;
+      }
 
-    .clock {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      font-variant-numeric: tabular-nums;
-    }
+      /* Top banner/header for time and date */
+      .panel-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        padding: 0 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #e2e8f0;
+        z-index: 10;
+        box-shadow: var(--shadow-sm);
+      }
 
-    /* TTS & Audio overlay toggle */
-    .audio-config {
-      position: absolute;
-      bottom: 1rem;
-      left: 1rem;
-      z-index: 10;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      cursor: pointer;
-      max-width: 2.2rem;
-      overflow: hidden;
-      transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, background-color 0.3s ease;
-      white-space: nowrap;
-      box-shadow: var(--shadow-md);
-      color: var(--text-primary);
-    }
+      .clock {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+      }
 
-    .audio-config:hover {
-      max-width: 20rem;
-      padding: 0.5rem 1rem;
-      background: var(--bg-secondary);
-      border-color: var(--primary);
-    }
-  </style>
-</head>
-<body>
+      /* TTS & Audio overlay toggle */
+      .audio-config {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        z-index: 10;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        max-width: 2.2rem;
+        overflow: hidden;
+        transition:
+          max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+          padding 0.3s ease,
+          background-color 0.3s ease;
+        white-space: nowrap;
+        box-shadow: var(--shadow-md);
+        color: var(--text-primary);
+      }
 
-  <!-- Header Banner -->
-  <div class="panel-header" style="position: relative; display: flex; justify-content: space-between; align-items: center; height: auto; padding: 1rem 3rem;">
-    <div class="logo" style="display: flex; align-items: center; gap: 12px;">
-      <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 45px; width: auto; object-fit: contain;">
-      <span style="color: var(--text-primary); font-weight: 700; font-size: 1.25rem;">Defensoria Publica do Estado do pará</span>
+      .audio-config:hover {
+        max-width: 20rem;
+        padding: 0.5rem 1rem;
+        background: var(--bg-secondary);
+        border-color: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Banner -->
+    <div
+      class="panel-header"
+      style="
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: auto;
+        padding: 1rem 3rem;
+      "
+    >
+      <div class="logo" style="display: flex; align-items: center; gap: 12px">
+        <img
+          src="assets/img/logo.png"
+          alt="Logo Defensoria"
+          style="height: 60px; width: auto; object-fit: contain"
+        />
+        <span
+          style="
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+          "
+          >Defensoria Pública do Estado do Pará</span
+        >
+      </div>
+      <div
+        style="
+          text-align: right;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 2px;
+        "
+      >
+        <div class="badge badge-normal" id="clock" style="line-height: 1">
+          00:00:00
+        </div>
+        <div
+          id="day-of-week"
+          style="
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: capitalize;
+          "
+        ></div>
+      </div>
     </div>
-    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-      <div class="badge badge-normal" id="clock" style="line-height: 1;">00:00:00</div>
-      <div id="day-of-week" style="font-size: 0.95rem; font-weight: 600; color: #9ca3af; text-transform: capitalize;"></div>
-    </div>
-  </div>
 
-  <div class="panel-container">
-    
-    <!-- Main called ticket view -->
-    <div class="main-call">
-      
-      <!-- Audio activation warning/toggle -->
-      <label class="audio-config">
-        <input type="checkbox" id="enable-sound" checked>
-        <span>Habilitar chamada por voz (Áudio)</span>
-      </label>
+    <div class="panel-container">
+      <!-- Main called ticket view -->
+      <div class="main-call">
+        <!-- Audio activation warning/toggle -->
+        <label class="audio-config">
+          <input type="checkbox" id="enable-sound" checked />
+          <span>Habilitar chamada por voz (Áudio)</span>
+        </label>
 
-      <div class="call-title">Senha Chamada</div>
-      <div class="current-code" id="current-code">---</div>
-      
-      <div class="current-details">
-        <div class="current-service" id="current-service">Aguardando início...</div>
-        <div>
-          <span class="current-desk" id="current-desk">GUICHÊ --</span>
+        <div class="call-title">Senha Chamada</div>
+        <div class="current-code" id="current-code">---</div>
+
+        <div class="current-details">
+          <div class="current-service" id="current-service">
+            Aguardando início...
+          </div>
+          <div>
+            <span class="current-desk" id="current-desk">GUICHÊ --</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Panel -->
+      <div class="history-panel">
+        <div class="history-title">Últimas Chamadas</div>
+        <div class="history-list" id="history-list">
+          <!-- Rendered dynamically -->
+          <div style="text-align: center; color: #4b5563; margin-top: 3rem">
+            Sem chamadas anteriores.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- History Panel -->
-    <div class="history-panel">
-      <div class="history-title">Últimas Chamadas</div>
-      <div class="history-list" id="history-list">
-        <!-- Rendered dynamically -->
-        <div style="text-align: center; color: #4b5563; margin-top: 3rem;">Sem chamadas anteriores.</div>
-      </div>
-    </div>
+    <script src="assets/js/app.js"></script>
+    <script>
+      // System Clock
+      function updateClock() {
+        const now = new Date();
+        document.getElementById("clock").textContent =
+          now.toLocaleTimeString("pt-BR");
 
-  </div>
+        const options = { weekday: "long" };
+        document.getElementById("day-of-week").textContent =
+          now.toLocaleDateString("pt-BR", options);
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
 
-  <script src="assets/js/app.js"></script>
-  <script>
-    // System Clock
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR');
-      
-      const options = { weekday: 'long' };
-      document.getElementById('day-of-week').textContent = now.toLocaleDateString('pt-BR', options);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Play visual call flash effect
-    function animateCall() {
-      // Flash screen background slightly
-      const mainCall = document.querySelector('.main-call');
-      mainCall.style.backgroundColor = '#1e293b';
-      setTimeout(() => {
-        mainCall.style.backgroundColor = '';
-      }, 500);
-    }
-
-    // Audio chime using Web Audio API (cross-browser offline synthesized chime)
-    function playChime() {
-      if (!document.getElementById('enable-sound').checked) return;
-      
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioContext();
-        
-        // Simple ding-dong sound
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-
-        osc1.connect(gainNode);
-        osc2.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-        osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
-
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-
-        osc1.start(ctx.currentTime);
-        osc2.start(ctx.currentTime);
-        
-        // Second note (dong)
+      // Play visual call flash effect
+      function animateCall() {
+        // Flash screen background slightly
+        const mainCall = document.querySelector(".main-call");
+        mainCall.style.backgroundColor = "#1e293b";
         setTimeout(() => {
-          const osc3 = ctx.createOscillator();
-          const osc4 = ctx.createOscillator();
-          const gainNode2 = ctx.createGain();
-          
-          osc3.connect(gainNode2);
-          osc4.connect(gainNode2);
-          gainNode2.connect(ctx.destination);
-          
-          osc3.frequency.setValueAtTime(392.00, ctx.currentTime); // G4
-          osc4.frequency.setValueAtTime(493.88, ctx.currentTime); // B4
-          
-          gainNode2.gain.setValueAtTime(0, ctx.currentTime);
-          gainNode2.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
-          gainNode2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-          
-          osc3.start(ctx.currentTime);
-          osc4.start(ctx.currentTime);
-          
-          osc3.stop(ctx.currentTime + 1.2);
-          osc4.stop(ctx.currentTime + 1.2);
-        }, 300);
-
-        osc1.stop(ctx.currentTime + 1.5);
-        osc2.stop(ctx.currentTime + 1.5);
-      } catch (e) {
-        console.error("Web Audio failed", e);
-      }
-    }
-
-    // Text-to-speech announcement
-    function announceTicket(ticket, desk) {
-      if (!document.getElementById('enable-sound').checked) return;
-
-      // Wait a moment for the chime to play
-      setTimeout(() => {
-        let serviceText = 'Vara de Família';
-        if (ticket.service === 'criminal') serviceText = 'Vara Criminal';
-        if (ticket.service === 'execucao-penal') serviceText = 'Execução Penal';
-        
-        let typeText = 'Normal';
-        if (ticket.type === 'prioridade') typeText = 'Prioritária';
-        if (ticket.type === 'superprioridade') typeText = 'Superprioridade';
-        
-        // Spell out the ticket code characters so it announces clearly
-        // e.g. "C N 0 0 1" instead of "CN um"
-        const spelledCode = ticket.code.split('').map(char => {
-          if (char === '-') return ' ';
-          return char;
-        }).join(' ');
-
-        const text = `Senha, ${spelledCode}. ${serviceText}, ${typeText}. No guichê ${desk}.`;
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-BR';
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
-      }, 1500);
-    }
-
-    // Update the layout elements
-    function updateDisplay(state) {
-      const current = state.currentTicket;
-      if (current) {
-        document.getElementById('current-code').textContent = current.code;
-        
-        let serviceLabel = 'Vara de Família';
-        if (current.service === 'criminal') serviceLabel = 'Vara Criminal';
-        if (current.service === 'execucao-penal') serviceLabel = 'Execução Penal';
-        
-        let typeLabel = 'Comum';
-        if (current.type === 'prioridade') typeLabel = 'Preferencial';
-        if (current.type === 'superprioridade') typeLabel = 'Superprioridade';
-        document.getElementById('current-service').textContent = `${serviceLabel} - ${typeLabel}`;
-        
-        document.getElementById('current-desk').textContent = `GUICHÊ ${current.desk}`;
+          mainCall.style.backgroundColor = "";
+        }, 500);
       }
 
-      // History
-      const historyListEl = document.getElementById('history-list');
-      if (state.history && state.history.length > 0) {
-        historyListEl.innerHTML = state.history.map(item => {
-          let serviceName = 'Família';
-          if (item.service === 'criminal') serviceName = 'Criminal';
-          if (item.service === 'execucao-penal') serviceName = 'Exec. Penal';
-          
-          return `
+      // Audio chime using Web Audio API (cross-browser offline synthesized chime)
+      function playChime() {
+        if (!document.getElementById("enable-sound").checked) return;
+
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioContext();
+
+          // Simple ding-dong sound
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+
+          osc1.connect(gainNode);
+          osc2.connect(gainNode);
+          gainNode.connect(ctx.destination);
+
+          osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+
+          gainNode.gain.setValueAtTime(0, ctx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+          gainNode.gain.exponentialRampToValueAtTime(
+            0.001,
+            ctx.currentTime + 1.2,
+          );
+
+          osc1.start(ctx.currentTime);
+          osc2.start(ctx.currentTime);
+
+          // Second note (dong)
+          setTimeout(() => {
+            const osc3 = ctx.createOscillator();
+            const osc4 = ctx.createOscillator();
+            const gainNode2 = ctx.createGain();
+
+            osc3.connect(gainNode2);
+            osc4.connect(gainNode2);
+            gainNode2.connect(ctx.destination);
+
+            osc3.frequency.setValueAtTime(392.0, ctx.currentTime); // G4
+            osc4.frequency.setValueAtTime(493.88, ctx.currentTime); // B4
+
+            gainNode2.gain.setValueAtTime(0, ctx.currentTime);
+            gainNode2.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+            gainNode2.gain.exponentialRampToValueAtTime(
+              0.001,
+              ctx.currentTime + 1.2,
+            );
+
+            osc3.start(ctx.currentTime);
+            osc4.start(ctx.currentTime);
+
+            osc3.stop(ctx.currentTime + 1.2);
+            osc4.stop(ctx.currentTime + 1.2);
+          }, 300);
+
+          osc1.stop(ctx.currentTime + 1.5);
+          osc2.stop(ctx.currentTime + 1.5);
+        } catch (e) {
+          console.error("Web Audio failed", e);
+        }
+      }
+
+      // Text-to-speech announcement
+      function announceTicket(ticket, desk) {
+        if (!document.getElementById("enable-sound").checked) return;
+
+        // Wait a moment for the chime to play
+        setTimeout(() => {
+          let serviceText = "Vara de Família";
+          if (ticket.service === "criminal") serviceText = "Vara Criminal";
+          if (ticket.service === "execucao-penal")
+            serviceText = "Execução Penal";
+
+          let typeText = "Normal";
+          if (ticket.type === "prioridade") typeText = "Prioritária";
+          if (ticket.type === "superprioridade") typeText = "Superprioridade";
+
+          // Spell out the ticket code characters so it announces clearly
+          // e.g. "C N 0 0 1" instead of "CN um"
+          const spelledCode = ticket.code
+            .split("")
+            .map((char) => {
+              if (char === "-") return " ";
+              return char;
+            })
+            .join(" ");
+
+          const text = `Senha, ${spelledCode}. ${serviceText}, ${typeText}. No guichê ${desk}.`;
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "pt-BR";
+          utterance.rate = 0.9;
+          window.speechSynthesis.speak(utterance);
+        }, 1500);
+      }
+
+      // Update the layout elements
+      function updateDisplay(state) {
+        const current = state.currentTicket;
+        if (current) {
+          document.getElementById("current-code").textContent = current.code;
+
+          let serviceLabel = "Vara de Família";
+          if (current.service === "criminal") serviceLabel = "Vara Criminal";
+          if (current.service === "execucao-penal")
+            serviceLabel = "Execução Penal";
+
+          let typeLabel = "Comum";
+          if (current.type === "prioridade") typeLabel = "Preferencial";
+          if (current.type === "superprioridade") typeLabel = "Superprioridade";
+          document.getElementById("current-service").textContent =
+            `${serviceLabel} - ${typeLabel}`;
+
+          document.getElementById("current-desk").textContent =
+            `GUICHÊ ${current.desk}`;
+        }
+
+        // History
+        const historyListEl = document.getElementById("history-list");
+        if (state.history && state.history.length > 0) {
+          historyListEl.innerHTML = state.history
+            .map((item) => {
+              let serviceName = "Família";
+              if (item.service === "criminal") serviceName = "Criminal";
+              if (item.service === "execucao-penal")
+                serviceName = "Exec. Penal";
+
+              return `
             <div class="history-item">
               <div class="history-code">${item.code}</div>
               <div class="history-info">
                 <div class="history-desk">Guichê ${item.desk}</div>
-                <div class="history-service">${serviceName} - ${item.type === 'superprioridade' ? 'Super' : (item.type === 'prioridade' ? 'Pref' : 'Comum')}</div>
+                <div class="history-service">${serviceName} - ${item.type === "superprioridade" ? "Super" : item.type === "prioridade" ? "Pref" : "Comum"}</div>
               </div>
             </div>
           `;
-        }).join('');
-      } else {
-        historyListEl.innerHTML = `<div style="text-align: center; color: #4b5563; margin-top: 3rem;">Sem chamadas anteriores.</div>`;
-      }
-    }
-
-    // Initialize display with current state
-    const initialState = getState();
-    updateDisplay(initialState);
-
-    // Listen to updates from operator
-    subscribeToUpdates((state) => {
-      updateDisplay(state);
-    });
-
-    if (channel) {
-      channel.onmessage = (event) => {
-        if (event.data && event.data.type === 'CALL_TICKET') {
-          const { ticket, desk } = event.data;
-          updateDisplay(getState());
-          animateCall();
-          playChime();
-          announceTicket(ticket, desk);
-        } else if (event.data && event.data.type === 'RECALL_TICKET') {
-          const { ticket, desk } = event.data;
-          animateCall();
-          playChime();
-          announceTicket(ticket, desk);
-        } else if (event.data && event.data.type === 'STATE_UPDATED') {
-          updateDisplay(event.data.state);
+            })
+            .join("");
+        } else {
+          historyListEl.innerHTML = `<div style="text-align: center; color: #4b5563; margin-top: 3rem;">Sem chamadas anteriores.</div>`;
         }
-      };
-    }
-  </script>
-</body>
+      }
+
+      // Initialize display with current state
+      const initialState = getState();
+      updateDisplay(initialState);
+
+      // Listen to updates from operator
+      subscribeToUpdates((state) => {
+        updateDisplay(state);
+      });
+
+      if (channel) {
+        channel.onmessage = (event) => {
+          if (event.data && event.data.type === "CALL_TICKET") {
+            const { ticket, desk } = event.data;
+            updateDisplay(getState());
+            animateCall();
+            playChime();
+            announceTicket(ticket, desk);
+          } else if (event.data && event.data.type === "RECALL_TICKET") {
+            const { ticket, desk } = event.data;
+            animateCall();
+            playChime();
+            announceTicket(ticket, desk);
+          } else if (event.data && event.data.type === "STATE_UPDATED") {
+            updateDisplay(event.data.state);
+          }
+        };
+      }
+    </script>
+  </body>
 </html>
