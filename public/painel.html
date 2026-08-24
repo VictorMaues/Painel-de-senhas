@@ -4,24 +4,84 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel de Exibição - Chamada de Senhas</title>
-    <link rel="stylesheet" href="assets/css/style.css" />
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+      :root {
+        --text-primary: #1e293b;
+        --primary: #2563eb;
+        --primary-light: #eff6ff;
+        --bg-secondary: #ffffff;
+        --border-color: #cbd5e1;
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+        --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      }
+
       body {
+        font-family: var(--font-family);
         background-color: #f1f5f9;
         color: var(--text-primary);
         height: 100vh;
         overflow: hidden;
         padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
       }
 
-      /* Layout split: 70% left for current ticket, 30% right for history */
+      /* Status Badges */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .badge-normal {
+        background-color: var(--primary-light);
+        color: var(--primary);
+      }
+
+      /* TELA DE BLOQUEIO PARA ATIVAR ÁUDIO CROSS-BROWSER */
+      #audio-unlocker {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.95);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
+      #audio-unlocker button {
+        padding: 1rem 2.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      }
+      #audio-unlocker button:hover {
+        background: #1d4ed8;
+      }
+
       .panel-container {
         display: grid;
         grid-template-columns: 7fr 3fr;
-        height: 100vh;
+        flex: 1;
         width: 100%;
       }
-
       .main-call {
         display: flex;
         flex-direction: column;
@@ -33,7 +93,6 @@
         position: relative;
         background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
       }
-
       .call-title {
         font-size: 2rem;
         font-weight: 700;
@@ -42,7 +101,6 @@
         letter-spacing: 4px;
         margin-bottom: 2rem;
       }
-
       .current-code {
         font-size: 10rem;
         font-weight: 900;
@@ -52,13 +110,11 @@
         letter-spacing: -2px;
         text-shadow: 0 4px 30px rgba(37, 99, 235, 0.15);
       }
-
       .current-details {
         display: flex;
         flex-direction: column;
         gap: 1rem;
       }
-
       .current-service {
         font-size: 2.5rem;
         font-weight: 700;
@@ -66,7 +122,6 @@
         text-transform: uppercase;
         letter-spacing: 1px;
       }
-
       .current-desk {
         font-size: 3.5rem;
         font-weight: 800;
@@ -80,7 +135,6 @@
         box-shadow: var(--shadow-md);
       }
 
-      /* Right column: history */
       .history-panel {
         background-color: #e2e8f0;
         display: flex;
@@ -88,7 +142,6 @@
         padding: 2rem;
         border-left: 1px solid #cbd5e1;
       }
-
       .history-title {
         font-size: 1.5rem;
         font-weight: 700;
@@ -100,7 +153,6 @@
         margin-bottom: 1.5rem;
         text-align: center;
       }
-
       .history-list {
         flex: 1;
         display: flex;
@@ -108,7 +160,6 @@
         gap: 1.25rem;
         overflow-y: auto;
       }
-
       .history-item {
         background-color: #ffffff;
         border: 1px solid #cbd5e1;
@@ -120,29 +171,19 @@
         box-shadow: var(--shadow-sm);
         transition: var(--transition);
       }
-
-      .history-item:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary);
-      }
-
       .history-code {
         font-size: 2.25rem;
         font-weight: 800;
         color: var(--text-primary);
       }
-
       .history-info {
         text-align: right;
       }
-
       .history-desk {
         font-size: 1.25rem;
         font-weight: 700;
         color: var(--primary);
       }
-
       .history-service {
         font-size: 0.8rem;
         color: #475569;
@@ -150,32 +191,18 @@
         margin-top: 0.25rem;
       }
 
-      /* Top banner/header for time and date */
       .panel-header {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 70px;
-        padding: 0 3rem;
+        position: relative;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #f8fafc;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e2e8f0;
+        height: 150px;
+        padding: 0 3rem;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
         z-index: 10;
         box-shadow: var(--shadow-sm);
       }
-
-      .clock {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        font-variant-numeric: tabular-nums;
-      }
-
-      /* TTS & Audio overlay toggle */
       .audio-config {
         position: absolute;
         bottom: 1rem;
@@ -200,7 +227,6 @@
         box-shadow: var(--shadow-md);
         color: var(--text-primary);
       }
-
       .audio-config:hover {
         max-width: 20rem;
         padding: 0.5rem 1rem;
@@ -210,7 +236,14 @@
     </style>
   </head>
   <body>
-    <!-- Header Banner -->
+    <div id="audio-unlocker">
+      <h2 style="margin-bottom: 2rem">Sistema de Painel de Senhas</h2>
+      <button id="btn-start-panel">Iniciar Painel (Ativar Áudio)</button>
+      <p style="margin-top: 1rem; font-size: 0.9rem; color: #cbd5e1">
+        O clique é necessário para liberar o som no navegador.
+      </p>
+    </div>
+
     <div
       class="panel-header"
       style="
@@ -220,6 +253,8 @@
         align-items: center;
         height: 150px;
         padding: 0px 3rem;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
       "
     >
       <div class="logo" style="display: flex; align-items: center; gap: 12px">
@@ -232,7 +267,7 @@
           style="
             color: var(--text-primary);
             font-weight: 700;
-            font-size: 1.80rem;
+            font-size: 1.8rem;
           "
           >Defensoria Pública do Estado do Pará</span
         >
@@ -249,8 +284,9 @@
         <div
           class="badge badge-normal"
           id="clock"
-          style="line-height: 1; 
-          font-size: 1.75rem"
+          style="
+            line-height: 1;
+            font-size: 1.75rem"
         >
           00:00:00
         </div>
@@ -258,18 +294,16 @@
           id="day-of-week"
           style="
             font-size: 1.75rem;
+            color: var(--text-secondary);
             font-weight: 600;
-            color: #9ca3af;
             text-transform: capitalize;
           "
         ></div>
       </div>
     </div>
 
-    <div class="panel-container">
-      <!-- Main called ticket view -->
-      <div class="main-call">
-        <!-- Audio activation warning/toggle -->
+    <main class="panel-container">
+      <section class="main-call" aria-live="assertive" aria-atomic="true">
         <label class="audio-config">
           <input type="checkbox" id="enable-sound" checked />
           <span>Habilitar chamada por voz (Áudio)</span>
@@ -286,25 +320,60 @@
             <span class="current-desk" id="current-desk">GUICHÊ --</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- History Panel -->
-      <div class="history-panel">
+      <aside class="history-panel">
         <div class="history-title">Últimas Chamadas</div>
-        <div class="history-list" id="history-list">
-          <!-- Rendered dynamically -->
+        <div class="history-list" id="history-list" aria-live="polite">
           <div style="text-align: center; color: #4b5563; margin-top: 3rem">
             Sem chamadas anteriores.
           </div>
         </div>
-      </div>
-    </div>
+      </aside>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="assets/js/app.js"></script>
     <script>
       let displayQueue = [];
       let isDisplaying = false;
+      let audioCtx; // Contexto de áudio global
+      let audioUnlocked = false;
+      let systemVoices = [];
+
+      // 1. Feature Detection e Inicialização Segura de Vozes
+      if ("speechSynthesis" in window) {
+        // Carrega vozes de forma assíncrona (Necessário no Chrome)
+        const loadVoices = () => {
+          systemVoices = window.speechSynthesis.getVoices();
+        };
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+      }
+
+      // 2. Destravamento de Áudio Cross-Browser (Evento do Usuário)
+      document
+        .getElementById("btn-start-panel")
+        .addEventListener("click", () => {
+          // Inicializa AudioContext (cross-browser)
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+
+          // Retira de "suspended" se necessário (Crucial para Safari)
+          if (audioCtx.state === "suspended") {
+            audioCtx.resume();
+          }
+
+          // Toca algo silencioso apenas para destravar o motor de voz (Crucial para Chrome/Firefox)
+          if ("speechSynthesis" in window) {
+            const unlockUtterance = new SpeechSynthesisUtterance("");
+            unlockUtterance.volume = 0;
+            window.speechSynthesis.speak(unlockUtterance);
+          }
+
+          audioUnlocked = true;
+          document.getElementById("audio-unlocker").style.display = "none";
+        });
 
       function processDisplayQueue() {
         if (isDisplaying || displayQueue.length === 0) return;
@@ -312,38 +381,38 @@
         isDisplaying = true;
         const { ticket, desk } = displayQueue.shift();
 
-        // 1. Atualizar a tela visualmente para a senha que está sendo chamada
         document.getElementById("current-code").textContent = ticket.code;
-        
+
         let serviceLabel = "Vara de Família";
         if (ticket.service === "criminal") serviceLabel = "Vara Criminal";
-        if (ticket.service === "execucao-penal") serviceLabel = "Execução Penal";
+        if (ticket.service === "execucao-penal")
+          serviceLabel = "Execução Penal";
 
         let typeLabel = "Comum";
         if (ticket.type === "prioridade") typeLabel = "Preferencial";
         if (ticket.type === "superprioridade") typeLabel = "Superprioridade";
-        document.getElementById("current-service").textContent = `${serviceLabel} - ${typeLabel}`;
+        document.getElementById("current-service").textContent =
+          `${serviceLabel} - ${typeLabel}`;
 
         document.getElementById("current-desk").textContent = `GUICHÊ ${desk}`;
 
-        // 2. Tocar som e anunciar voz
         animateCall();
-        playChime();
-        announceTicket(ticket, desk);
 
-        // 3. Manter a tela exibindo essa senha de forma exclusiva por 8 segundos
+        if (audioUnlocked && document.getElementById("enable-sound").checked) {
+          playChime();
+          announceTicket(ticket, desk);
+        }
+
         setTimeout(() => {
           isDisplaying = false;
           processDisplayQueue();
         }, 8000);
       }
 
-      // System Clock
       function updateClock() {
         const now = new Date();
         document.getElementById("clock").textContent =
           now.toLocaleTimeString("pt-BR");
-
         const options = { weekday: "long" };
         document.getElementById("day-of-week").textContent =
           now.toLocaleDateString("pt-BR", options);
@@ -351,9 +420,7 @@
       setInterval(updateClock, 1000);
       updateClock();
 
-      // Play visual call flash effect
       function animateCall() {
-        // Flash screen background slightly
         const mainCall = document.querySelector(".main-call");
         mainCall.style.backgroundColor = "#1e293b";
         setTimeout(() => {
@@ -361,75 +428,76 @@
         }, 500);
       }
 
-      // Audio chime using Web Audio API (cross-browser offline synthesized chime)
+      // 3. AudioContext Refatorado para Resiliência
       function playChime() {
-        if (!document.getElementById("enable-sound").checked) return;
-
+        if (!audioCtx) return;
         try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          const ctx = new AudioContext();
+          if (audioCtx.state === "suspended") audioCtx.resume();
 
-          // Simple ding-dong sound
-          const osc1 = ctx.createOscillator();
-          const osc2 = ctx.createOscillator();
-          const gainNode = ctx.createGain();
+          const osc1 = audioCtx.createOscillator();
+          const osc2 = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
 
           osc1.connect(gainNode);
           osc2.connect(gainNode);
-          gainNode.connect(ctx.destination);
+          gainNode.connect(audioCtx.destination);
 
-          osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-          osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+          osc1.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime);
 
-          gainNode.gain.setValueAtTime(0, ctx.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+          gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(
+            0.3,
+            audioCtx.currentTime + 0.1,
+          );
           gainNode.gain.exponentialRampToValueAtTime(
             0.001,
-            ctx.currentTime + 1.2,
+            audioCtx.currentTime + 1.2,
           );
 
-          osc1.start(ctx.currentTime);
-          osc2.start(ctx.currentTime);
+          osc1.start(audioCtx.currentTime);
+          osc2.start(audioCtx.currentTime);
 
-          // Second note (dong)
           setTimeout(() => {
-            const osc3 = ctx.createOscillator();
-            const osc4 = ctx.createOscillator();
-            const gainNode2 = ctx.createGain();
+            const osc3 = audioCtx.createOscillator();
+            const osc4 = audioCtx.createOscillator();
+            const gainNode2 = audioCtx.createGain();
 
             osc3.connect(gainNode2);
             osc4.connect(gainNode2);
-            gainNode2.connect(ctx.destination);
+            gainNode2.connect(audioCtx.destination);
 
-            osc3.frequency.setValueAtTime(392.0, ctx.currentTime); // G4
-            osc4.frequency.setValueAtTime(493.88, ctx.currentTime); // B4
+            osc3.frequency.setValueAtTime(392.0, audioCtx.currentTime);
+            osc4.frequency.setValueAtTime(493.88, audioCtx.currentTime);
 
-            gainNode2.gain.setValueAtTime(0, ctx.currentTime);
-            gainNode2.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+            gainNode2.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode2.gain.linearRampToValueAtTime(
+              0.3,
+              audioCtx.currentTime + 0.1,
+            );
             gainNode2.gain.exponentialRampToValueAtTime(
               0.001,
-              ctx.currentTime + 1.2,
+              audioCtx.currentTime + 1.2,
             );
 
-            osc3.start(ctx.currentTime);
-            osc4.start(ctx.currentTime);
+            osc3.start(audioCtx.currentTime);
+            osc4.start(audioCtx.currentTime);
 
-            osc3.stop(ctx.currentTime + 1.2);
-            osc4.stop(ctx.currentTime + 1.2);
+            osc3.stop(audioCtx.currentTime + 1.2);
+            osc4.stop(audioCtx.currentTime + 1.2);
           }, 300);
 
-          osc1.stop(ctx.currentTime + 1.5);
-          osc2.stop(ctx.currentTime + 1.5);
+          osc1.stop(audioCtx.currentTime + 1.5);
+          osc2.stop(audioCtx.currentTime + 1.5);
         } catch (e) {
-          console.error("Web Audio failed", e);
+          console.error("Web Audio falhou:", e);
         }
       }
 
-      // Text-to-speech announcement
+      // 4. Seleção Inteligente de Voz pt-BR
       function announceTicket(ticket, desk) {
-        if (!document.getElementById("enable-sound").checked) return;
+        if (!("speechSynthesis" in window)) return;
 
-        // Wait a moment for the chime to play
         setTimeout(() => {
           let serviceText = "Vara de Família";
           if (ticket.service === "criminal") serviceText = "Vara Criminal";
@@ -440,26 +508,26 @@
           if (ticket.type === "prioridade") typeText = "Prioritária";
           if (ticket.type === "superprioridade") typeText = "Superprioridade";
 
-          // Spell out the ticket code characters so it announces clearly
-          // e.g. "C N 0 0 1" instead of "CN um"
           const spelledCode = ticket.code
             .split("")
-            .map((char) => {
-              if (char === "-") return " ";
-              return char;
-            })
+            .map((char) => (char === "-" ? " " : char))
             .join(" ");
 
           const text = `Senha, ${spelledCode}. ${serviceText}, ${typeText}. No guichê ${desk}.`;
-
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = "pt-BR";
           utterance.rate = 0.9;
+
+          // Filtra explicitamente por uma voz brasileira disponível no SO atual
+          const ptVoice = systemVoices.find(
+            (v) => v.lang.replace("_", "-") === "pt-BR",
+          );
+          if (ptVoice) utterance.voice = ptVoice;
+
           window.speechSynthesis.speak(utterance);
         }, 1500);
       }
 
-      // Update the layout elements
       function updateDisplay(state) {
         const current = state.currentTicket;
         if (current && !isDisplaying) {
@@ -475,22 +543,20 @@
           if (current.type === "superprioridade") typeLabel = "Superprioridade";
           document.getElementById("current-service").textContent =
             `${serviceLabel} - ${typeLabel}`;
-
           document.getElementById("current-desk").textContent =
             `GUICHÊ ${current.desk}`;
         }
 
-        // History
         const historyListEl = document.getElementById("history-list");
         if (state.history && state.history.length > 0) {
           historyListEl.innerHTML = state.history
             .map((item) => {
-               let serviceName = "Família";
-               if (item.service === "criminal") serviceName = "Criminal";
-               if (item.service === "execucao-penal")
-                 serviceName = "Exec. Penal";
+              let serviceName = "Família";
+              if (item.service === "criminal") serviceName = "Criminal";
+              if (item.service === "execucao-penal")
+                serviceName = "Exec. Penal";
 
-               return `
+              return `
              <div class="history-item">
                <div class="history-code">${item.code}</div>
                <div class="history-info">
@@ -506,16 +572,19 @@
         }
       }
 
-      // Initialize display with current state
-      const initialState = getState();
-      updateDisplay(initialState);
+      // Presumindo que estas funções estão definidas no seu app.js
+      if (typeof getState === "function") {
+        const initialState = getState();
+        updateDisplay(initialState);
+      }
 
-      // Listen to updates from operator
-      subscribeToUpdates((state) => {
-        updateDisplay(state);
-      });
+      if (typeof subscribeToUpdates === "function") {
+        subscribeToUpdates((state) => {
+          updateDisplay(state);
+        });
+      }
 
-      if (socket) {
+      if (typeof socket !== "undefined") {
         socket.on("CALL_TICKET", ({ ticket, desk }) => {
           displayQueue.push({ ticket, desk });
           processDisplayQueue();
@@ -528,11 +597,14 @@
         });
       }
 
-      if (channel) {
+      if (typeof channel !== "undefined") {
         channel.onmessage = (event) => {
           if (event.data) {
-            // Se o socket estiver ativo, ignora chamadas redundantes vindas do BroadcastChannel para evitar duplicidade
-            if (socket && (event.data.type === "CALL_TICKET" || event.data.type === "RECALL_TICKET")) {
+            if (
+              typeof socket !== "undefined" &&
+              (event.data.type === "CALL_TICKET" ||
+                event.data.type === "RECALL_TICKET")
+            ) {
               return;
             }
 
