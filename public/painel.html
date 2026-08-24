@@ -515,19 +515,39 @@
         updateDisplay(state);
       });
 
+      if (socket) {
+        socket.on("CALL_TICKET", ({ ticket, desk }) => {
+          displayQueue.push({ ticket, desk });
+          processDisplayQueue();
+          updateDisplay(getState());
+        });
+
+        socket.on("RECALL_TICKET", ({ ticket, desk }) => {
+          displayQueue.push({ ticket, desk });
+          processDisplayQueue();
+        });
+      }
+
       if (channel) {
         channel.onmessage = (event) => {
-          if (event.data && event.data.type === "CALL_TICKET") {
-            const { ticket, desk } = event.data;
-            displayQueue.push({ ticket, desk });
-            processDisplayQueue();
-            updateDisplay(getState());
-          } else if (event.data && event.data.type === "RECALL_TICKET") {
-            const { ticket, desk } = event.data;
-            displayQueue.push({ ticket, desk });
-            processDisplayQueue();
-          } else if (event.data && event.data.type === "STATE_UPDATED") {
-            updateDisplay(event.data.state);
+          if (event.data) {
+            // Se o socket estiver ativo, ignora chamadas redundantes vindas do BroadcastChannel para evitar duplicidade
+            if (socket && (event.data.type === "CALL_TICKET" || event.data.type === "RECALL_TICKET")) {
+              return;
+            }
+
+            if (event.data.type === "CALL_TICKET") {
+              const { ticket, desk } = event.data;
+              displayQueue.push({ ticket, desk });
+              processDisplayQueue();
+              updateDisplay(getState());
+            } else if (event.data.type === "RECALL_TICKET") {
+              const { ticket, desk } = event.data;
+              displayQueue.push({ ticket, desk });
+              processDisplayQueue();
+            } else if (event.data.type === "STATE_UPDATED") {
+              updateDisplay(event.data.state);
+            }
           }
         };
       }

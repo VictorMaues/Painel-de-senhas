@@ -8,9 +8,30 @@
     <style>
       body {
         background-color: var(--bg-primary);
-        justify-content: center;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      /* Top banner/header for time and date */
+      .panel-header {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 1rem;
+        height: 150px;
+        padding: 0 3rem;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 10;
+        box-shadow: var(--shadow-sm);
+      }
+      .clock {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
       }
       .totem-container {
         max-width: 1000px;
@@ -161,18 +182,73 @@
     </style>
   </head>
   <body>
-    <img src="assets/img/logo.png" alt="Logo Defensoria" style="height: 180px; margin-bottom: 1rem; object-fit: contain;">
-    <div class="totem-container">
-      <div class="totem-hero">
-        <div class="totem-title">Painel de Senhas</div>
-        <div class="totem-subtitle">Sistema de Autoatendimento</div>
+    <!-- Header Banner -->
+    <div
+      class="panel-header"
+      style="
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 150px;
+        padding: 0px 3rem;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+      "
+    >
+      <div class="logo" style="display: flex; align-items: center; gap: 12px">
+        <img
+          src="assets/img/logo.png"
+          alt="Logo Defensoria"
+          style="height: 7rem; width: auto; object-fit: contain"
+        />
+        <span
+          style="
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.80rem;
+          "
+          >Defensoria Pública do Estado do Pará</span
+        >
       </div>
+      <div
+        style="
+          text-align: right;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 2px;
+        "
+      >
+        <div
+          class="badge badge-normal"
+          id="clock"
+          style="line-height: 1; 
+          font-size: 1.75rem"
+        >
+          00:00:00
+        </div>
+        <div
+          id="day-of-week"
+          style="
+            font-size: 1.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: capitalize;
+          "
+        >
+          -
+        </div>
+      </div>
+    </div>
 
+    <main style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 2rem;">
+      <div class="totem-container">
+      <h2 style="font-size: 1.8rem; margin-bottom: 2rem">
+        Selecione o Serviço Desejado:
+      </h2>
       <!-- STEP 1: Select Service -->
       <div id="step-service" class="step-section active">
-        <h2 style="font-size: 1.8rem; margin-bottom: 2rem">
-          Selecione o Serviço Desejado:
-        </h2>
         <div class="options-grid">
           <div class="option-card" onclick="selectService('criminal')">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-shield-icon lucide-user-shield"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="M22 17.5c0 2.499-1.75 3.749-3.83 4.474a.5.5 0 0 1-.335-.005c-2.085-.72-3.835-1.97-3.835-4.47V14a.5.5 0 0 1 .5-.499c1 0 2.25-.6 3.12-1.36a.6.6 0 0 1 .76-.001c.875.765 2.12 1.36 3.12 1.36a.5.5 0 0 1 .5.5z"/><circle cx="9" cy="7" r="4"/></svg>
@@ -342,6 +418,7 @@
         </button>
       </div>
     </div>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="assets/js/app.js"></script>
@@ -411,6 +488,20 @@
         selectedType = "";
         showStep("step-service");
       }
+
+      // System Clock
+      function updateClock() {
+        const now = new Date();
+        const clockEl = document.getElementById("clock");
+        const dayEl = document.getElementById("day-of-week");
+        if (clockEl) clockEl.textContent = now.toLocaleTimeString("pt-BR");
+        if (dayEl) {
+          const options = { weekday: "long" };
+          dayEl.textContent = now.toLocaleDateString("pt-BR", options);
+        }
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
     </script>
   </body>
 </html>
