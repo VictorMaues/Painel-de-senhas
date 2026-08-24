@@ -303,6 +303,41 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="assets/js/app.js"></script>
     <script>
+      let displayQueue = [];
+      let isDisplaying = false;
+
+      function processDisplayQueue() {
+        if (isDisplaying || displayQueue.length === 0) return;
+
+        isDisplaying = true;
+        const { ticket, desk } = displayQueue.shift();
+
+        // 1. Atualizar a tela visualmente para a senha que está sendo chamada
+        document.getElementById("current-code").textContent = ticket.code;
+        
+        let serviceLabel = "Vara de Família";
+        if (ticket.service === "criminal") serviceLabel = "Vara Criminal";
+        if (ticket.service === "execucao-penal") serviceLabel = "Execução Penal";
+
+        let typeLabel = "Comum";
+        if (ticket.type === "prioridade") typeLabel = "Preferencial";
+        if (ticket.type === "superprioridade") typeLabel = "Superprioridade";
+        document.getElementById("current-service").textContent = `${serviceLabel} - ${typeLabel}`;
+
+        document.getElementById("current-desk").textContent = `GUICHÊ ${desk}`;
+
+        // 2. Tocar som e anunciar voz
+        animateCall();
+        playChime();
+        announceTicket(ticket, desk);
+
+        // 3. Manter a tela exibindo essa senha de forma exclusiva por 8 segundos
+        setTimeout(() => {
+          isDisplaying = false;
+          processDisplayQueue();
+        }, 8000);
+      }
+
       // System Clock
       function updateClock() {
         const now = new Date();
@@ -427,7 +462,7 @@
       // Update the layout elements
       function updateDisplay(state) {
         const current = state.currentTicket;
-        if (current) {
+        if (current && !isDisplaying) {
           document.getElementById("current-code").textContent = current.code;
 
           let serviceLabel = "Vara de Família";
@@ -450,20 +485,20 @@
         if (state.history && state.history.length > 0) {
           historyListEl.innerHTML = state.history
             .map((item) => {
-              let serviceName = "Família";
-              if (item.service === "criminal") serviceName = "Criminal";
-              if (item.service === "execucao-penal")
-                serviceName = "Exec. Penal";
+               let serviceName = "Família";
+               if (item.service === "criminal") serviceName = "Criminal";
+               if (item.service === "execucao-penal")
+                 serviceName = "Exec. Penal";
 
-              return `
-            <div class="history-item">
-              <div class="history-code">${item.code}</div>
-              <div class="history-info">
-                <div class="history-desk">Guichê ${item.desk}</div>
-                <div class="history-service">${serviceName} - ${item.type === "superprioridade" ? "Super" : item.type === "prioridade" ? "Pref" : "Comum"}</div>
-              </div>
-            </div>
-          `;
+               return `
+             <div class="history-item">
+               <div class="history-code">${item.code}</div>
+               <div class="history-info">
+                 <div class="history-desk">Guichê ${item.desk}</div>
+                 <div class="history-service">${serviceName} - ${item.type === "superprioridade" ? "Super" : item.type === "prioridade" ? "Pref" : "Comum"}</div>
+               </div>
+             </div>
+           `;
             })
             .join("");
         } else {
@@ -484,15 +519,13 @@
         channel.onmessage = (event) => {
           if (event.data && event.data.type === "CALL_TICKET") {
             const { ticket, desk } = event.data;
+            displayQueue.push({ ticket, desk });
+            processDisplayQueue();
             updateDisplay(getState());
-            animateCall();
-            playChime();
-            announceTicket(ticket, desk);
           } else if (event.data && event.data.type === "RECALL_TICKET") {
             const { ticket, desk } = event.data;
-            animateCall();
-            playChime();
-            announceTicket(ticket, desk);
+            displayQueue.push({ ticket, desk });
+            processDisplayQueue();
           } else if (event.data && event.data.type === "STATE_UPDATED") {
             updateDisplay(event.data.state);
           }
