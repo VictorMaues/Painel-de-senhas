@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acompanhar Senha - Defensoria Pública</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      body {
+        background-color: var(--bg-primary);
+        justify-content: center;
+        align-items: center;
+        padding: 1.5rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .status-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem 2rem;
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+      }
+      .ticket-code-display {
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--primary);
+        letter-spacing: -1px;
+        margin: 1rem 0;
+      }
+      .queue-status-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+      .position-counter {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-size: 3.5rem;
+        font-weight: 800;
+        width: 6.5rem;
+        height: 6.5rem;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem auto;
+        box-shadow: var(--shadow-sm);
+      }
+      .turn-alert-active {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--success);
+        color: white;
+        z-index: 9999;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        text-align: center;
+        animation: flash-green 1.5s infinite;
+      }
+      @keyframes flash-green {
+        0%,
+        100% {
+          background-color: var(--success);
+        }
+        50% {
+          background-color: #059669;
+        }
+      }
+      .turn-title {
+        font-size: 3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1.5rem;
+      }
+      .turn-desk {
+        font-size: 4.5rem;
+        font-weight: 900;
+        background: rgba(255, 255, 255, 0.2);
+        border: 3px solid white;
+        padding: 1rem 3rem;
+        border-radius: var(--radius-md);
+        margin: 1.5rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Card de Acompanhamento padrão -->
+    <div class="status-card" id="tracking-card">
+      <div style="display: flex; justify-content: center; margin-bottom: 1rem">
+        <img
+          src="assets/img/Group.svg"
+          alt="Logo Defensoria"
+         style="
+          background-color: #013220; 
+          border-radius: 8px; 
+          padding: 10px;      
+          height: 7rem; 
+          width: auto; 
+          display: inline-block;"
+        />
+      </div>
+      <h2
+        style="
+          font-size: 1.25rem;
+          color: var(--text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        "
+      >
+        Sua Senha
+      </h2>
+      <div class="ticket-code-display" id="ticket-code">---</div>
+      <div id="service-badge-container" style="margin-bottom: 1.5rem">
+        <span class="badge badge-normal" id="ticket-service-label"
+          >Carregando...</span
+        >
+        <span class="badge badge-priority" id="ticket-type-label">...</span>
+      </div>
+
+      <div
+        style="
+          border-top: 1px solid var(--border-color);
+          padding-top: 1.5rem;
+          margin-top: 1.5rem;
+        "
+      >
+        <div class="queue-status-text" id="status-message">
+          Aguardando Fila...
+        </div>
+        <div id="position-area">
+          <p style="color: var(--text-secondary); font-size: 0.95rem">
+            Pessoas na sua frente:
+          </p>
+          <div class="position-counter" id="people-ahead">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de Alerta de Turno (Sua Vez!) -->
+    <div class="turn-alert-active" id="turn-alert">
+      <div class="turn-title">Sua Vez!</div>
+      <div style="font-size: 2rem; font-weight: 700">
+        Senha <span id="alert-code">---</span>
+      </div>
+      <p style="font-size: 1.25rem; margin-top: 1rem; max-width: 400px">
+        Por favor, dirija-se imediatamente ao guichê:
+      </p>
+      <div class="turn-desk" id="alert-desk">GUICHÊ --</div>
+      <button
+        class="btn btn-secondary"
+        onclick="dismissAlert()"
+        style="
+          background: white;
+          color: var(--success);
+          font-size: 1.2rem;
+          padding: 1rem 2.5rem;
+          border-radius: var(--radius-md);
+          font-weight: bold;
+          margin-top: 2rem;
+        "
+      >
+        Entendido
+      </button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+      // Recupera ID do ticket da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const myTicketId = urlParams.get("id");
+
+      let audioContext = null;
+
+      // Tocar sinal sonoro no celular do usuário
+      function playBeep() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioContext = audioContext || new AudioContext();
+
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+
+          osc.frequency.setValueAtTime(880, audioContext.currentTime); // Tom alto A5
+          gain.gain.setValueAtTime(0, audioContext.currentTime);
+          gain.gain.linearRampToValueAtTime(
+            0.4,
+            audioContext.currentTime + 0.05,
+          );
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + 0.8,
+          );
+
+          osc.start(audioContext.currentTime);
+          osc.stop(audioContext.currentTime + 0.8);
+        } catch (e) {
+          console.error("Erro ao tocar áudio de alerta no celular", e);
+        }
+      }
+
+      // Vibrar dispositivo do usuário se suportado
+      function triggerVibration() {
+        if (navigator.vibrate) {
+          navigator.vibrate([300, 150, 300, 150, 500]); // Padrão de vibração
+        }
+      }
+
+      function dismissAlert() {
+        document.getElementById("turn-alert").style.display = "none";
+      }
+
+      function updateTracking(state) {
+        if (!myTicketId) {
+          document.getElementById("status-message").textContent =
+            "Ticket Inválido ou Não Informado.";
+          document.getElementById("position-area").style.display = "none";
+          return;
+        }
+
+        const tickets = state.queue;
+        const myTicket = tickets.find((t) => t.id === myTicketId);
+
+        if (!myTicket) {
+          document.getElementById("status-message").textContent =
+            "Senha não localizada na fila.";
+          document.getElementById("position-area").style.display = "none";
+          return;
+        }
+
+        // Atualiza informações do ticket
+        document.getElementById("ticket-code").textContent = myTicket.code;
+        document.getElementById("alert-code").textContent = myTicket.code;
+
+        let serviceLabel = "Vara de Família";
+        if (myTicket.service === "criminal") serviceLabel = "Vara Criminal";
+        if (myTicket.service === "execucao-penal")
+          serviceLabel = "Execução Penal";
+        document.getElementById("ticket-service-label").textContent =
+          serviceLabel;
+
+        let typeLabel = "Comum";
+        if (myTicket.type === "prioridade") typeLabel = "Preferencial";
+        if (myTicket.type === "superprioridade") typeLabel = "Superprioridade";
+        document.getElementById("ticket-type-label").textContent = typeLabel;
+
+        // Se a senha já foi chamada
+        if (myTicket.status === "called") {
+          document.getElementById("status-message").textContent =
+            `Senha CHAMADA no Guichê ${myTicket.desk}!`;
+          document.getElementById("position-area").style.display = "none";
+
+          // Exibe tela cheia vermelha piscando chamando o usuário
+          const alertEl = document.getElementById("turn-alert");
+          if (alertEl.style.display !== "flex") {
+            alertEl.style.display = "flex";
+            document.getElementById("alert-desk").textContent =
+              `GUICHÊ ${myTicket.desk}`;
+            playBeep();
+            triggerVibration();
+          }
+        } else {
+          document.getElementById("status-message").textContent =
+            "Aguardando na Fila...";
+          document.getElementById("position-area").style.display = "block";
+
+          // Calcular a quantidade de pessoas na frente do usuário
+          // Filtra todas as senhas aguardando na fila
+          const waitingTickets = tickets.filter((t) => t.status === "waiting");
+
+          // Regra de ordenação correta:
+          // Ordena respeitando o peso da prioridade (Superprioridade > Preferencial > Comum)
+          // E ordena cronologicamente os tickets criados
+          waitingTickets.sort((a, b) => {
+            const getPriorityWeight = (type) => {
+              if (type === "superprioridade") return 2;
+              if (type === "prioridade") return 1;
+              return 0;
+            };
+
+            const weightDiff =
+              getPriorityWeight(b.type) - getPriorityWeight(a.type);
+            if (weightDiff !== 0) return weightDiff;
+
+            // Se tiverem a mesma prioridade, ordena por ordem de criação (antigos primeiro)
+            return a.id.split("-").pop() - b.id.split("-").pop();
+          });
+
+          // Localiza a posição do usuário na fila ordenada
+          const index = waitingTickets.findIndex((t) => t.id === myTicketId);
+
+          if (index !== -1) {
+            document.getElementById("people-ahead").textContent = index;
+          } else {
+            document.getElementById("people-ahead").textContent = "0";
+          }
+        }
+      }
+
+      // Inicializar conexão e atualização
+      const initialState = getState();
+      updateTracking(initialState);
+
+      subscribeToUpdates((state) => {
+        updateTracking(state);
+      });
+    </script>
+  </body>
+</html>

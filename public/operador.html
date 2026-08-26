@@ -133,7 +133,7 @@
           style="
             color: var(--text-primary);
             font-weight: 700;
-            font-size: 1.80rem;"
+            font-size: 2.5rem;"
         >
           Painel do Operador
         </span>
@@ -344,6 +344,13 @@
             >
               Execução Penal
             </button>
+            <button
+              class="tab-btn"
+              id="tab-history"
+              onclick="setTab('history')"
+            >
+              Histórico
+            </button>
           </div>
 
           <div class="queue-section">
@@ -524,6 +531,40 @@
           activeCodeEl.textContent = "---";
           activeInfoEl.textContent = "Nenhuma senha em atendimento";
           recallBtn.style.display = "none";
+        }
+
+        // Render queue list based on active tab
+        if (activeTab === "history") {
+          const historyList = state.history || [];
+          const container = document.getElementById("queue-list-container");
+          if (historyList.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Histórico de chamadas vazio.</div>`;
+          } else {
+            container.innerHTML = historyList
+              .map((t) => {
+                let serviceName = "Família";
+                if (t.service === "criminal") serviceName = "Vara Criminal";
+                if (t.service === "execucao-penal") serviceName = "Execução Penal";
+
+                return `
+              <div class="queue-item">
+                <div>
+                  <div class="queue-code">${t.code}</div>
+                  <div class="queue-details">
+                    <span class="badge ${t.type === "superprioridade" ? "badge-super" : t.type === "prioridade" ? "badge-priority" : "badge-normal"}">${t.type === "superprioridade" ? "Superprioridade" : t.type === "prioridade" ? "Preferencial" : "Comum"}</span>
+                    <span>${serviceName}</span>
+                    <span style="margin-left: 0.5rem; color: var(--text-muted);">${t.calledAt ? `Chamado às ${t.calledAt}` : `Criado às ${t.createdAt}`}</span>
+                  </div>
+                </div>
+                <button class="btn btn-secondary" onclick="callSpecific('${t.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                  Rechamar
+                </button>
+              </div>
+            `;
+              })
+              .join("");
+          }
+          return;
         }
 
         // Filter queue list based on active tab

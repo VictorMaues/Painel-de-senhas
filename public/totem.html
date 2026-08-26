@@ -214,7 +214,7 @@
           style="
             color: var(--text-primary);
             font-weight: 700;
-            font-size: 1.80rem;
+            font-size: 2.5rem;
           "
           >Defensoria Pública do Estado do Pará</span
         >
@@ -401,6 +401,10 @@
           </div>
           <div class="ticket-type" id="print-type-badge">PREFERENCIAL</div>
           <div class="ticket-number" id="print-code">CN-001</div>
+          <div id="print-qrcode-container" style="margin: 0.75rem 0; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <img id="print-qrcode" src="" alt="QR Code Acompanhamento" style="width: 100px; height: 100px; border: 1px solid #eee; padding: 4px; background: white;" />
+            <span style="font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">Acompanhe pelo celular</span>
+          </div>
           <div class="ticket-footer">
             <div>Emissão: <span id="print-time">13:00</span></div>
             <div style="margin-top: 0.5rem; font-weight: bold">
@@ -477,6 +481,10 @@
         document.getElementById("print-type-badge").textContent = typeText;
         document.getElementById("print-code").textContent = ticket.code;
         document.getElementById("print-time").textContent = ticket.createdAt;
+
+        // Gera a URL de acompanhamento para o celular e define como fonte do QRCode
+        const trackingUrl = `${window.location.origin}/acompanhar.html?id=${ticket.id}`;
+        document.getElementById("print-qrcode").src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(trackingUrl)}`;
 
         showStep("step-success");
 

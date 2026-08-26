@@ -184,7 +184,7 @@ function callTicket(ticketId, desk) {
     state.history = [
       state.currentTicket,
       ...state.history.filter((h) => h.id !== state.currentTicket.id),
-    ].slice(0, 4);
+    ].slice(0, 5);
   }
 
   ticket.status = "called";
