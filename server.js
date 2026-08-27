@@ -84,9 +84,9 @@ app.get('/api/tts', async (req, res) => {
       }
     });
 
-    // Timeout aumentado para 10 segundos para dar tempo à API do Gemini de gerar o áudio
+    // Timeout aumentado para 30 segundos para dar tempo à API do Gemini de gerar o áudio
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Tempo limite (timeout) excedido na API do Gemini')), 10000) //aqui demonho
+      setTimeout(() => reject(new Error('Tempo limite (timeout) excedido na API do Gemini')), 100000)
     );
 
     const response = await Promise.race([callPromise, timeoutPromise]);
