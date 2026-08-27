@@ -1,13 +1,13 @@
 # Painel de Senhas - Defensoria
 
-Um sistema completo de gerenciamento de filas e chamadas de senhas com suporte a múltiplas categorias, prioridades e síntese de voz (TTS) utilizando a Inteligência Artificial do Google Gemini.
+Um sistema completo de gerenciamento de filas e chamadas de senhas com suporte a múltiplas categorias, prioridades e síntese de voz (TTS) utilizando o Google Tradutor.
 
 ## 🚀 Funcionalidades
 
 - **Múltiplas Categorias:** Suporte para filas independentes (ex: Criminal, Família, Execução Penal).
 - **Níveis de Prioridade:** Filas normais, prioritárias e superprioritárias.
 - **Sincronização em Tempo Real:** Telas e painéis sincronizados instantaneamente utilizando `Socket.io`.
-- **Chamada por Voz (TTS):** Integração com a API do Google Gemini para realizar a leitura das senhas chamadas com voz natural de assistente virtual.
+- **Chamada por Voz (TTS):** Integração com a API do Google TTS Gratuito para realizar a leitura das senhas chamadas com voz natural.
 - **Acesso em Rede Local:** Pode ser acessado por qualquer dispositivo (computadores, Smart TVs, tablets, celulares) que estejam conectados na mesma rede Wi-Fi/cabo.
 
 ## 🛠️ Tecnologias Utilizadas
@@ -15,15 +15,13 @@ Um sistema completo de gerenciamento de filas e chamadas de senhas com suporte a
 - **Node.js** (Ambiente de execução)
 - **Express.js** (Servidor Web para rotas e arquivos estáticos)
 - **Socket.io** (Comunicação em tempo real via WebSockets)
-- **Google Gen AI SDK (`@google/genai`)** (Para geração do áudio das chamadas - Text-to-Speech)
-- **Dotenv** (Gerenciamento de variáveis de ambiente)
+- **Google TTS API (`google-tts-api`)** (Para geração do áudio das chamadas sem necessidade de chaves e sem limites rígidos)
+- **Dotenv** (Gerenciamento de variáveis de ambiente - *Opcional neste novo modelo*)
 
 ## ⚙️ Pré-requisitos
 
 Antes de iniciar, certifique-se de ter instalado em sua máquina:
 - [Node.js](https://nodejs.org/) (versão 18 ou superior recomendada)
-
-Você também precisará de uma chave de API do **Google AI Studio** para habilitar o recurso de chamada por voz (se não for configurado, o sistema apenas não emitirá o áudio gerado pelo Gemini).
 
 ## 📦 Instalação
 
@@ -33,23 +31,11 @@ Abra o terminal na pasta raiz do projeto e instale as dependências executando o
 npm install
 ```
 
-## 🔑 Configuração do Ambiente
-
-Para que a geração de voz funcione corretamente, configure sua chave de API:
-
-1. Na raiz do projeto, verifique se o arquivo `.env` foi criado. Se não, você pode criar um a partir do arquivo `.env.example`.
-2. Abra o arquivo `.env`.
-3. Adicione sua chave gerada no [Google AI Studio](https://aistudio.google.com/):
-
-```env
-GEMINI_API_KEY=sua_chave_real_aqui
-```
-
-> **Aviso de Quota (Limites de Uso):** Se você estiver utilizando a camada gratuita (Free Tier) do Google AI Studio, existe um limite de chamadas por minuto/dia. Caso esse limite seja atingido, as senhas podem falhar ao gerar áudio temporariamente (Erro 429 - Quota Exceeded), sendo necessário aguardar alguns segundos ou migrar para o plano *Pay-as-you-go*.
+*(Opcional) A chave de API no arquivo `.env` não é mais necessária para o funcionamento da voz, pois o sistema atual utiliza a via gratuita.*
 
 ## 🚀 Como Executar o Projeto
 
-Após instalar as dependências e configurar as variáveis, inicie o servidor:
+Após instalar as dependências, inicie o servidor:
 
 ```bash
 npm start
