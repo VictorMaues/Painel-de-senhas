@@ -378,6 +378,14 @@
             window.speechSynthesis.speak(unlockUtterance);
           }
 
+          // Destrava elemento HTML5 Audio tocando um som silencioso curto
+          try {
+            const silentPlay = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==");
+            silentPlay.play().catch(e => console.warn("Erro ao tocar áudio silencioso para destravar:", e));
+          } catch (err) {
+            console.warn("Falha ao destravar elemento Audio:", err);
+          }
+
           audioUnlocked = true;
           document.getElementById("audio-unlocker").style.display = "none";
         });
@@ -501,10 +509,8 @@
         }
       }
 
-      // 4. Seleção Inteligente de Voz pt-BR
+      // 4. Chamada de Voz com IA do Gemini (com Fallback local)
       function announceTicket(ticket, desk) {
-        if (!("speechSynthesis" in window)) return;
-
         setTimeout(() => {
           let serviceText = "Vara de Família";
           if (ticket.service === "criminal") serviceText = "Vara Criminal";
@@ -521,18 +527,48 @@
             .join(" ");
 
           const text = `Senha, ${spelledCode}. ${serviceText}, ${typeText}. No guichê ${desk}.`;
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = "pt-BR";
-          utterance.rate = 0.9;
 
-          // Filtra explicitamente por uma voz brasileira disponível no SO atual
-          const ptVoice = systemVoices.find(
-            (v) => v.lang.replace("_", "-") === "pt-BR",
-          );
-          if (ptVoice) utterance.voice = ptVoice;
+          // Detecta se está rodando via arquivo local (file://) para apontar ao servidor Express local
+          const isLocalFile = window.location.protocol === 'file:';
+          const baseUrl = isLocalFile ? "http://localhost:3000" : "";
 
-          window.speechSynthesis.speak(utterance);
+          // Cria e reproduz o áudio retornado pela rota da API do Gemini
+          const audioUrl = `${baseUrl}/api/tts?text=${encodeURIComponent(text)}`;
+          console.log("Requisitando áudio do Gemini:", audioUrl);
+          const audio = new Audio(audioUrl);
+          
+          let fallbackTriggered = false;
+          const triggerFallback = () => {
+            if (!fallbackTriggered) {
+              fallbackTriggered = true;
+              fallbackSpeech(text);
+            }
+          };
+
+          audio.onerror = () => {
+            console.warn("Erro de carregamento do áudio do Gemini (503/500). Usando voz local.");
+            triggerFallback();
+          };
+
+          audio.play().catch((e) => {
+            console.warn("Falha ao reproduzir áudio do Gemini. Usando voz local.", e);
+            triggerFallback();
+          });
         }, 1500);
+      }
+
+      function fallbackSpeech(text) {
+        if (!("speechSynthesis" in window)) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "pt-BR";
+        utterance.rate = 0.9;
+
+        const ptVoice = systemVoices.find(
+          (v) => v.lang.replace("_", "-") === "pt-BR",
+        );
+        if (ptVoice) utterance.voice = ptVoice;
+
+        window.speechSynthesis.speak(utterance);
       }
 
       function updateDisplay(state) {

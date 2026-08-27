@@ -127,13 +127,21 @@
         <img
           src="assets/img/Group.svg"
           alt="Logo Defensoria"
-          style="height: 7rem; width: auto; object-fit: contain"
+          style="
+            background-color: #013220;
+            border-radius: 8px;
+            padding: 10px;
+            height: 7rem;
+            width: auto;
+            display: inline-block;
+          "
         />
         <span
           style="
             color: var(--text-primary);
             font-weight: 700;
-            font-size: 2.5rem;"
+            font-size: 2.5rem;
+          "
         >
           Painel do Operador
         </span>
@@ -544,7 +552,8 @@
               .map((t) => {
                 let serviceName = "Família";
                 if (t.service === "criminal") serviceName = "Vara Criminal";
-                if (t.service === "execucao-penal") serviceName = "Execução Penal";
+                if (t.service === "execucao-penal")
+                  serviceName = "Execução Penal";
 
                 return `
               <div class="queue-item">
