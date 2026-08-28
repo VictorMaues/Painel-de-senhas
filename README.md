@@ -23,25 +23,27 @@ Um sistema completo de gerenciamento de filas e chamadas de senhas com suporte a
 Antes de iniciar, certifique-se de ter instalado em sua máquina:
 - [Node.js](https://nodejs.org/) (versão 18 ou superior recomendada)
 
-## 📦 Instalação
+## 🛠️ Passo a Passo para Executar o Projeto
 
-Abra o terminal na pasta raiz do projeto e instale as dependências executando o comando abaixo:
+Siga os comandos abaixo no terminal do seu computador (PowerShell, CMD ou terminal do VS Code) dentro da pasta raiz do projeto:
 
+### 1. Instalar as dependências do projeto
+Este comando instala todas as bibliotecas necessárias (como `google-tts-api` e `socket.io`) especificadas no `package.json`:
 ```bash
 npm install
 ```
 
-*(Opcional) A chave de API no arquivo `.env` não é mais necessária para o funcionamento da voz, pois o sistema atual utiliza a via gratuita.*
-
-## 🚀 Como Executar o Projeto
-
-Após instalar as dependências, inicie o servidor:
-
+### 2. Iniciar o servidor do painel
+Este comando inicia o servidor do painel de senhas em tempo real:
 ```bash
 npm start
 ```
 
-No seu terminal, você verá uma tela semelhante a esta:
+---
+
+## 🚀 O que acontece após a execução?
+
+Ao rodar `npm start`, você verá a seguinte mensagem no seu terminal:
 
 ```text
 ==================================================
@@ -52,6 +54,6 @@ SISTEMA DE PAINEL DE SENHAS INICIADO COM SUCESSO
 ==================================================
 ```
 
-### 📺 Como usar nas telas
-1. **No computador que está rodando o servidor (Local):** Acesse `http://localhost:3000`.
-2. **Na TV do salão de espera ou em computadores de outros atendentes:** Abra o navegador, conecte-se à mesma rede, e acesse o IP de rede mostrado no terminal (ex: `http://10.85.225.106:3000`).
+### 📺 Como acessar as telas
+1. **No computador que está rodando o servidor (Local):** Acesse `http://localhost:3000` para abrir o painel principal de atendimento/configuração.
+2. **Na TV da sala de espera ou nos computadores dos demais operadores:** Abra o navegador, conecte à mesma rede (Wi-Fi ou cabo) do servidor, e acesse o IP de rede mostrado no terminal (ex: `http://192.168.0.X:3000`).
